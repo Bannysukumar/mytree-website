@@ -1,0 +1,478 @@
+{
+  "hero": {
+    "eyebrow": "Mytree Ecosystem",
+    "slides": [
+      {
+        "id": "s1",
+        "kicker": "Mass planting, close to home",
+        "headline": "A forest does not wait for a press release.",
+        "body": "Neighbourhood crews plant, water, and keep watch. $MYTREE is the ledger for that work — not a substitute for it.",
+        "imageUrl": "/media/planting.jpg"
+      },
+      {
+        "id": "s2",
+        "kicker": "Blue Water Mission",
+        "headline": "Water remembers every contour we repair.",
+        "body": "We restore ponds, nalas, and village drinking sources, then publish the litres so the number can be checked.",
+        "imageUrl": "/media/water.jpg"
+      },
+      {
+        "id": "s3",
+        "kicker": "Proof of green action",
+        "headline": "The climate ledger should belong to the people doing the work.",
+        "body": "Verified tasks earn $MYTREE at the price set in the open. Bonuses, caps, and copy are edited from the admin panel — never buried in the website.",
+        "imageUrl": "/media/community.jpg"
+      }
+    ],
+    "stats": [
+      {
+        "id": "trees",
+        "label": "Saplings still in the ground",
+        "value": 184320,
+        "suffix": "",
+        "liveKey": ""
+      },
+      {
+        "id": "water",
+        "label": "Litres restored",
+        "value": 9200000,
+        "suffix": "",
+        "liveKey": ""
+      },
+      {
+        "id": "people",
+        "label": "Active participants",
+        "value": 12480,
+        "suffix": "",
+        "liveKey": ""
+      },
+      {
+        "id": "funds",
+        "label": "INR donations recorded",
+        "value": 2460000,
+        "suffix": "",
+        "liveKey": "fundsRaisedInr"
+      }
+    ],
+    "primaryCta": "Buy $MYTREE",
+    "primaryHref": "#buy",
+    "secondaryCta": "Donate in INR",
+    "secondaryHref": "#donate"
+  },
+  "contact": {
+    "email": "hello@mytreeecosystem.org",
+    "phone": "+91 80 4560 2210",
+    "address": "2nd floor, Greenfield Collective, Jayanagar 4th Block, Bengaluru 560011",
+    "socials": [
+      {
+        "label": "Instagram",
+        "href": "https://instagram.com"
+      },
+      {
+        "label": "X",
+        "href": "https://x.com"
+      },
+      {
+        "label": "YouTube",
+        "href": "https://youtube.com"
+      }
+    ],
+    "headline": "Write to the stewards.",
+    "newsletterPlaceholder": "Newsletter email",
+    "newsletterButton": "Join",
+    "links": [
+      {
+        "label": "Buy",
+        "href": "#buy"
+      },
+      {
+        "label": "Donate",
+        "href": "#donate"
+      }
+    ]
+  },
+  "legal": {
+    "buy": "Tokens are bought only with USDT (BEP20) on BNB Smart Chain. A purchase is final once it confirms. Referral income is claimable $MYTREE, not USDT. INR cannot buy tokens. $MYTREE is a community utility token, not a promise of profit, yield, or future price.",
+    "donate": "INR donations are voluntary contributions. They do not issue $MYTREE, do not join the referral program, and are non-refundable except where a written refund policy says otherwise.",
+    "referral": "When a referred USDT purchase confirms, the direct referrer can claim 10% of those tokens and the person who referred them can claim 5%. A claim sends only $MYTREE to that wallet. No bonus is earned without a valid referral, and an INR donation never triggers this. This is not investment advice.",
+    "footer": "Mytree Ecosystem is an independent community initiative. Token availability depends on the configured sale round and on-chain limits. Always verify the contract address in the admin-published sale settings before you pay."
+  },
+  "referralCopy": {
+    "eyebrow": "Refer and earn",
+    "headline": "When C buys through B, B receives {{referrerPct}}% and A receives {{upstreamPct}}%.",
+    "body": "A referred B. B refers C. If C buys 100 $MYTREE with USDT, C receives those 100 tokens immediately. B can claim 10 tokens and A can claim 5. A claim sends only $MYTREE, never USDT. If A was never linked, only B can claim. A purchase with no referral pays no bonus. INR donations never trigger this.",
+    "steps": [
+      {
+        "title": "Link the chain",
+        "body": "When you activate, your wallet is bound to the person who referred you. That link is what lets their referrer earn on the next purchase."
+      },
+      {
+        "title": "Share the link",
+        "body": "The buyer pays with USDT and passes your wallet into the purchase. The contract accrues $MYTREE for you and, if linked, the person who referred you. Each of you claims your own tokens."
+      },
+      {
+        "title": "Claim the tokens",
+        "body": "A buy of 100 tokens accrues 10 for the direct referrer and 5 for the referrer above them. Each person claims those tokens to their own wallet. The claim sends $MYTREE only."
+      }
+    ]
+  },
+  "tracks": [
+    {
+      "id": "plantation",
+      "order": 1,
+      "title": "Mass Tree Plantation",
+      "tag": "Flagship",
+      "summary": "Ridge-to-village planting crews that stay through the first two monsoons, not just the photo hour.",
+      "details": "Stewards mark pits, record the sapling, and check survival at 90 and 365 days. A dead sapling does not stay on the ledger. Schools, panchayat grounds, and degraded grazing edges are the first sites.",
+      "metric": "90-day survival check",
+      "accent": "mint",
+      "imageUrl": "/media/planting.jpg"
+    },
+    {
+      "id": "water",
+      "order": 2,
+      "title": "Blue Water Mission",
+      "tag": "Watershed",
+      "summary": "Repair the small structures that decide whether a village well lasts past April.",
+      "details": "We desilt ponds, rebuild check dams, and reopen blocked nalas with local labour. Volumes are counted from partner measurements, not from a slogan. Drinking water and farm recharge are both in scope.",
+      "metric": "Litres, published per site",
+      "accent": "foam",
+      "imageUrl": "/media/water.jpg"
+    },
+    {
+      "id": "mobility",
+      "order": 3,
+      "title": "Green Mobility Survey",
+      "tag": "Field data",
+      "summary": "A commute log that asks how people actually move, then pays only for complete, sane entries.",
+      "details": "Participants record walk, cycle, bus, and shared rides. The survey is a picture of a neighbourhood, not a gadget challenge. Impossible speeds and copy-paste days are dropped before any reward is considered.",
+      "metric": "Daily cap per wallet",
+      "accent": "sand",
+      "imageUrl": "/media/community.jpg"
+    }
+  ],
+  "poga": [
+    {
+      "id": "sapling",
+      "order": 1,
+      "task": "Plant a sapling with a geo-tagged photo",
+      "baseReward": 25,
+      "verification": "Photo, GPS, and a steward review within 7 days",
+      "antiCheat": "EXIF time, image hash, and a geofence around the declared site"
+    },
+    {
+      "id": "water100",
+      "order": 2,
+      "task": "Restore 100 litres in a mapped catchment",
+      "baseReward": 15,
+      "verification": "Partner certificate or a dated water-structure photo",
+      "antiCheat": "Site-day volume cap and a partner registry check"
+    },
+    {
+      "id": "commute",
+      "order": 3,
+      "task": "Log a green-mobility commute",
+      "baseReward": 8,
+      "verification": "Self-attestation plus an optional trip note",
+      "antiCheat": "Daily cap and an impossible-speed reject"
+    },
+    {
+      "id": "circle",
+      "order": 4,
+      "task": "Host a neighbourhood planting circle",
+      "baseReward": 60,
+      "verification": "Attendance list and two photos of the same pit line",
+      "antiCheat": "Minimum unique attendees and a cooldown per site"
+    },
+    {
+      "id": "grove",
+      "order": 5,
+      "task": "File a corporate grove sponsorship report",
+      "baseReward": 400,
+      "verification": "Invoice reference and a planting certificate",
+      "antiCheat": "One claim per invoice number"
+    }
+  ],
+  "tokenomics": {
+    "totalSupply": 10000000000,
+    "symbol": "mytree",
+    "note": "Fixed supply, minted once to the treasury at deployment. Allocations below are the working split and can be edited by an admin.",
+    "allocations": [
+      {
+        "id": "actions",
+        "label": "Community climate actions",
+        "percent": 40,
+        "color": "#3dbe7a"
+      },
+      {
+        "id": "sale",
+        "label": "Public token sale",
+        "percent": 20,
+        "color": "#9ef7c2"
+      },
+      {
+        "id": "referral",
+        "label": "Referral rewards pool",
+        "percent": 8,
+        "color": "#e7c27a"
+      },
+      {
+        "id": "grants",
+        "label": "Ecosystem grants",
+        "percent": 12,
+        "color": "#6fbfa3"
+      },
+      {
+        "id": "team",
+        "label": "Team and contributors",
+        "percent": 10,
+        "color": "#c4846a"
+      },
+      {
+        "id": "treasury",
+        "label": "Treasury reserve",
+        "percent": 7,
+        "color": "#8aa89a"
+      },
+      {
+        "id": "liquidity",
+        "label": "Liquidity",
+        "percent": 3,
+        "color": "#d8ffe8"
+      }
+    ]
+  },
+  "team": [
+    {
+      "id": "anika",
+      "order": 1,
+      "name": "Anika Deshmukh",
+      "role": "Field steward",
+      "bio": "Spent a decade with dryland planting crews in north Karnataka. She decides which sites stay on the map after the first summer, and which claims get sent back.",
+      "imageUrl": "/media/planting.jpg"
+    },
+    {
+      "id": "farhan",
+      "order": 2,
+      "name": "Farhan Qureshi",
+      "role": "Watershed lead",
+      "bio": "Civil engineer who would rather measure a pond before the rains than after the ceremony. He runs Blue Water Mission’s volume checks with local panchayat staff.",
+      "imageUrl": "/media/water.jpg"
+    },
+    {
+      "id": "leela",
+      "order": 3,
+      "name": "Leela Nair",
+      "role": "Verification",
+      "bio": "Builds the anti-cheat rules for Proof of Green Action: duplicate photos, recycled GPS pins, and invoices that try to earn twice.",
+      "imageUrl": "/media/community.jpg"
+    },
+    {
+      "id": "kabir",
+      "order": 4,
+      "name": "Kabir Sethi",
+      "role": "Community treasury",
+      "bio": "Keeps the sale round, the rewards pool, and the INR donation books in separate drawers. He publishes the contract address the site is actually calling.",
+      "imageUrl": "/media/planting.jpg"
+    }
+  ],
+  "posts": [
+    {
+      "id": "first-monsoon",
+      "order": 1,
+      "title": "What we count after the first monsoon",
+      "excerpt": "A sapling in a photograph is not a forest. Here is the check we run when the rains leave.",
+      "publishedAt": "2026-06-12",
+      "author": "Anika Deshmukh",
+      "body": "We planted through the hot months on school edges and grazing fallows, then waited. A photo on planting day is the easy record. The record that matters is the one taken when the soil has crusted again.\n\nNinety days after planting, stewards walk the same line. A living sapling stays in the public count. A dead one is removed, even if the earlier photo was perfect. That subtraction is the whole point of the ledger.\n\n$MYTREE attached to a task waits for the same check. The token does not make a tree real. The walk does.",
+      "imageUrl": "/media/planting.jpg"
+    },
+    {
+      "id": "two-ledgers",
+      "order": 2,
+      "title": "Why donations and tokens do not share a ledger",
+      "excerpt": "INR gifts fund work. $MYTREE purchases are a separate, risk-bearing sale. Mixing them helps nobody.",
+      "publishedAt": "2026-07-03",
+      "author": "Kabir Sethi",
+      "body": "A family that gives five hundred rupees is not joining a referral scheme. Their gift is recorded as a donation, receipted if they leave an email, and kept out of the token contract.\n\nA wallet that buys $MYTREE is doing something else. The price is set in the admin panel, mirrored on-chain, and the purchase can fail, pause, or lose value. Referral bonuses apply only there, and only after the transaction confirms.\n\nIf a page ever implies that a donation earns tokens, that page is wrong. Tell us, and we will correct the copy.",
+      "imageUrl": "/media/water.jpg"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "t1",
+      "order": 1,
+      "quote": "The crew came back in September. Half the photos from June did not survive the recount, and they said so out loud. That is when I trusted the number.",
+      "name": "Meera J.",
+      "place": "School committee, Tumakuru district",
+      "imageUrl": "/media/planting.jpg"
+    },
+    {
+      "id": "t2",
+      "order": 2,
+      "quote": "We desilted the pond we already had. No new name, no new foundation stone. The well at the lower street lasted three weeks longer than last April.",
+      "name": "S. Patil",
+      "place": "Gram panchayat member",
+      "imageUrl": "/media/water.jpg"
+    },
+    {
+      "id": "t3",
+      "order": 3,
+      "quote": "I shared my link with two cousins. The bonus arrived in the same transaction as their purchase, and the donation button stayed a donation button. That separation mattered to them.",
+      "name": "Rafi K.",
+      "place": "Bengaluru participant",
+      "imageUrl": "/media/community.jpg"
+    }
+  ],
+  "tiers": [
+    {
+      "id": "volunteer",
+      "order": 1,
+      "name": "Volunteer",
+      "priceLabel": "Free",
+      "summary": "Show up, learn the pit line, and log work under a steward.",
+      "cta": "Join a crew",
+      "href": "#contact",
+      "benefits": [
+        "Field briefing notes",
+        "Task list for open sites",
+        "No token purchase required"
+      ]
+    },
+    {
+      "id": "verified",
+      "order": 2,
+      "name": "Verified Contributor",
+      "priceLabel": "After one approved task",
+      "summary": "A reviewer has accepted at least one Proof of Green Action claim.",
+      "cta": "See the matrix",
+      "href": "#poga",
+      "benefits": [
+        "Higher daily task cap",
+        "Name on the site ledger",
+        "Eligible for referral rewards on purchases"
+      ]
+    },
+    {
+      "id": "csr",
+      "order": 3,
+      "name": "Corporate-CSR Partner",
+      "priceLabel": "By agreement",
+      "summary": "Fund a named grove or a water structure, with a public certificate and a single invoice claim.",
+      "cta": "Talk to treasury",
+      "href": "#contact",
+      "benefits": [
+        "Site report in writing",
+        "Logo only after the 90-day check",
+        "No automatic referral on the donation itself"
+      ]
+    }
+  ],
+  "simulatorTasks": [
+    {
+      "id": "sapling",
+      "order": 1,
+      "label": "Sapling planted and verified",
+      "reward": 25,
+      "unit": "sapling"
+    },
+    {
+      "id": "water100",
+      "order": 2,
+      "label": "100 litres restored",
+      "reward": 15,
+      "unit": "block of 100 litres"
+    },
+    {
+      "id": "commute",
+      "order": 3,
+      "label": "Green commute log",
+      "reward": 8,
+      "unit": "day"
+    },
+    {
+      "id": "circle",
+      "order": 4,
+      "label": "Planting circle hosted",
+      "reward": 60,
+      "unit": "circle"
+    }
+  ],
+  "sale": {
+    "priceUsd": 0.05208915,
+    "priceInr": 5,
+    "nativeUsdRate": 95.989284,
+    "paused": false,
+    "minPurchaseUsd": 10,
+    "maxPurchaseUsd": 5000,
+    "roundSupply": 200000000,
+    "tokensSold": 0,
+    "contractAddress": "0x928F590A479869177092cff272cee0b8E3E8c758",
+    "tokenAddress": "0x8C193b59Ea21Ce7c6e1396EBE592A23EB9Ca00Dd",
+    "usdtAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "usdtDecimals": 18,
+    "chainId": 56,
+    "explorerUrl": "https://bscscan.com",
+    "paymentSymbol": "USDT",
+    "timerEnabled": true,
+    "timerEndsAt": "2026-09-27T13:20:56.076Z",
+    "timerLabel": "Presale round closes in",
+    "timerEndedText": "This presale round has closed."
+  },
+  "referral": {
+    "referrerBonusPercentage": 10,
+    "buyerBonusPercentage": 0,
+    "additionalLevels": [
+      {
+        "level": 2,
+        "percentage": 5
+      }
+    ],
+    "maxDepth": 2,
+    "rewardsPoolCap": 80000000,
+    "enabled": true
+  },
+  "brand": {
+    "name": "Mytree",
+    "logoUrl": "/media/logo.png",
+    "alt": "Mytree"
+  },
+  "banners": [
+    {
+      "id": "plant",
+      "order": 1,
+      "enabled": true,
+      "kicker": "Mytree Ecosystem",
+      "title": "A forest does not wait for a press release.",
+      "subtitle": "Crews that stay through the first two monsoons.",
+      "body": "Neighbourhood crews plant, water, and keep watch. $MYTREE records that work. It does not replace it.",
+      "ctaLabel": "See the tracks",
+      "href": "#tracks",
+      "imageUrl": "/media/planting.jpg"
+    },
+    {
+      "id": "water",
+      "order": 2,
+      "enabled": true,
+      "kicker": "Blue Water Mission",
+      "title": "Water remembers every contour we repair.",
+      "subtitle": "Ponds and nalas measured, then published.",
+      "body": "We restore ponds, nalas, and village drinking sources, then publish the litres so the number can be checked.",
+      "ctaLabel": "See the tracks",
+      "href": "#tracks",
+      "imageUrl": "/media/water.jpg"
+    },
+    {
+      "id": "circle",
+      "order": 3,
+      "enabled": true,
+      "kicker": "Proof of green action",
+      "title": "The climate ledger should belong to the people doing the work.",
+      "subtitle": "The ledger belongs to the people doing the work.",
+      "body": "Verified tasks earn $MYTREE at the published price. Referral income is claimed later, as tokens only. INR does not buy tokens.",
+      "ctaLabel": "Read a field note",
+      "href": "#stories",
+      "imageUrl": "/media/community.jpg"
+    }
+  ]
+}

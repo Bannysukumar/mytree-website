@@ -1,0 +1,107 @@
+{
+  "copy": {
+    "connectTitle": "Connect a wallet to continue",
+    "connectBody": "The dashboard opens only for a connected wallet. Use the same wallet sheet as the rest of the site.",
+    "streakStart": "Make a purchase to start your reward streak",
+    "levelUp": "You need {{amount}} more in purchases to level up",
+    "streakDone": "You have cleared every published milestone.",
+    "balanceTitle": "Total $MYTREE balance",
+    "referralTitle": "Referral bonus",
+    "buybackTitle": "Buyback",
+    "buybackCta": "Make first buyback purchase",
+    "betaNote": "BETA — final allocation and payout subject to confirmation",
+    "noTransactions": "There are no finalized transactions yet.",
+    "buyTab": "Buy $MYTREE",
+    "worthLabel": "$MYTREE worth",
+    "minLabel": "Minimum",
+    "promoLabel": "Promo code",
+    "apply": "Apply",
+    "promoApplied": "Code applied",
+    "promoInvalid": "That code is not active.",
+    "buyCta": "Buy now",
+    "yourReferrals": "Your referrals",
+    "productsTitle": "Products and assets",
+    "rewardPool": "Reward pool",
+    "viewWinners": "View winners",
+    "claimTitle": "Claim referral tokens",
+    "claimLocked": "Nothing to claim yet.",
+    "claimReady": "Claim sends $MYTREE to your wallet now. USDT is not sent.",
+    "otherCryptos": "Other cryptos",
+    "liveTitle": "Live transactions",
+    "mineTitle": "My transactions"
+  },
+  "nav": [
+    { "id": "home", "label": "Home", "icon": "LayoutDashboard", "visible": true, "badge": "" },
+    { "id": "buy", "label": "Buy Now", "icon": "ShoppingBag", "visible": true, "badge": "NEW" },
+    { "id": "aftersale", "label": "Buy Aftersale", "icon": "BadgePercent", "visible": false, "badge": "" },
+    { "id": "buyback", "label": "Buyback", "icon": "RefreshCcw", "visible": false, "badge": "" },
+    { "id": "referral", "label": "Referral", "icon": "Share2", "visible": true, "badge": "" },
+    { "id": "leaderboard", "label": "Leaderboard", "icon": "Trophy", "visible": true, "badge": "" },
+    { "id": "claim", "label": "Claim", "icon": "Gift", "visible": true, "badge": "" },
+    { "id": "transactions", "label": "Transactions", "icon": "Receipt", "visible": true, "badge": "" },
+    { "id": "mine", "label": "My Transactions", "icon": "Wallet", "visible": true, "badge": "", "parent": "transactions" },
+    { "id": "live", "label": "Live Transactions", "icon": "Activity", "visible": true, "badge": "", "parent": "transactions" },
+    { "id": "profile", "label": "Profile", "icon": "User", "visible": true, "badge": "" }
+  ],
+  "milestones": [
+    { "id": "m1", "spendUsd": 200, "purchaseCount": 5, "rewardTokens": 25, "badge": "First grove" },
+    { "id": "m2", "spendUsd": 400, "purchaseCount": 10, "rewardTokens": 60, "badge": "Ridge crew" },
+    { "id": "m3", "spendUsd": 1000, "purchaseCount": 20, "rewardTokens": 180, "badge": "Watershed" },
+    { "id": "m4", "spendUsd": 3000, "purchaseCount": 50, "rewardTokens": 500, "badge": "Canopy" }
+  ],
+  "ranks": [
+    { "id": "crab", "name": "Crab", "icon": "🦀", "spendUsd": 0 },
+    { "id": "turtle", "name": "Turtle", "icon": "🐢", "spendUsd": 200 },
+    { "id": "heron", "name": "Heron", "icon": "🦩", "spendUsd": 800 },
+    { "id": "banyan", "name": "Banyan", "icon": "🌳", "spendUsd": 2500 }
+  ],
+  "buyback": {
+    "enabled": false,
+    "rateUsd": 0.04,
+    "rateInr": 3.4,
+    "beta": true,
+    "disclaimer": "Buyback payouts are estimated from the published rate. They are not automatic and are not a price promise."
+  },
+  "salePanel": {
+    "batchLabel": "Batch 1 – Opening",
+    "nextStagePriceUsd": 0.015,
+    "nextStageNote": "Next stage price, once the queued trigger is met",
+    "impactTabLabel": "Buy Impact Kit"
+  },
+  "stages": [
+    { "id": "s2", "label": "Stage 2", "priceUsd": 0.015, "triggerTokensSold": 50000000, "triggerDate": "" }
+  ],
+  "aftersale": {
+    "batchLabel": "Aftersale",
+    "priceUsd": 0.02,
+    "note": "A later round. Hidden until the admin turns the menu item on."
+  },
+  "currencies": [
+    { "id": "USDT", "symbol": "USDT", "kind": "token", "min": 1, "usdRate": 1, "enabled": true, "featured": true, "icon": "₮", "tokenAddress": "0x55d398326f99059fF775485246999027B3197955" }
+  ],
+  "claim": {
+    "enabled": true,
+    "title": "Referral income",
+    "unlockAt": "",
+    "condition": "Claim sends only $MYTREE. USDT stays in the sale contract. INR donations cannot be claimed as tokens.",
+    "amountLabel": "Read from the contract.",
+    "amount": 0
+  },
+  "leaderboard": {
+    "poolAmount": 5000,
+    "poolCurrency": "USD",
+    "resetLabel": "Resets every day at 00:00 UTC",
+    "resetAt": "",
+    "criteria": "purchaseVolume",
+    "pageSize": 10,
+    "prizes": [
+      { "rank": 1, "amount": 1500 },
+      { "rank": 2, "amount": 800 },
+      { "rank": 3, "amount": 400 }
+    ]
+  },
+  "products": [],
+  "promoCodes": [
+    { "code": "GROVE10", "active": true, "type": "bonus", "value": 10, "expiresAt": "", "usageCap": 100, "used": 0 }
+  ]
+}

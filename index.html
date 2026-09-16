@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Mytree Ecosystem — grassroots climate action, $MYTREE community token, and INR donations."
+    />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="canonical" href="https://uwgea32.web.app/" />
+    <title>Mytree Ecosystem</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (function () {
+        try {
+          var path = "";
+          var saved = localStorage.getItem("mytree_page_return") || "";
+          if (saved.charAt(0) === "{") {
+            try { path = JSON.parse(saved).path || ""; } catch (err) { path = ""; }
+          }
+          if (!path) {
+            var pageCookie = document.cookie.match(/(?:^|; )mytree_page_return=([^;]*)/);
+            if (pageCookie) path = decodeURIComponent(pageCookie[1]);
+          }
+          if (!path) path = localStorage.getItem("mytree_join_return") || "";
+          if (path.indexOf("/") !== 0 || path === "/") return;
+          if (location.pathname !== "/") return;
+          if (location.pathname + location.search === path) return;
+          location.replace(path);
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
