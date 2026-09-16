@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.8",
+    "@walletconnect/ethereum-provider": "2.25.0",
     "@web3modal/wagmi": "5.1.11",
     "firebase": "^11.1.0",
     "lucide-react": "^0.469.0",
