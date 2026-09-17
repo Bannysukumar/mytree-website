@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import { useReferralCode } from "../hooks/useReferralCode";
 import { useWallet } from "../hooks/useWallet";
 import { shortAddress } from "../lib/format";
-import { clearJoinReturn, markJoinReturn } from "../lib/dashRedirect";
+import { clearJoinReturn, clearPageReturn, markJoinReturn, markPageReturn } from "../lib/dashRedirect";
 import { prepareWalletReturn } from "../lib/wagmi";
 
 function sponsorState(value, ownAddress) {
@@ -24,25 +24,46 @@ function sponsorState(value, ownAddress) {
 export default function JoinReferral() {
   const navigate = useNavigate();
   const { address, isConnected } = useWallet();
-  const { activate, busy, error, referrerWallet } = useReferralCode();
+  const { activate, busy, error, savedReferrer, chainReferrer } = useReferralCode();
   const [params] = useSearchParams();
   const fromLink = params.get("ref") || "";
   const [sponsor, setSponsor] = useState(() => (isAddress(fromLink) ? getAddress(fromLink) : ""));
   const [notice, setNotice] = useState("");
+  const [returning] = useState(() => sessionStorage.getItem("mytree_sponsor_confirm") === "1");
   const check = sponsorState(sponsor, address);
 
+  const locked = savedReferrer && isAddress(savedReferrer) ? getAddress(savedReferrer) : "";
+  const linkSponsor = isAddress(fromLink) ? getAddress(fromLink) : "";
+  const differentSponsor = Boolean(locked && linkSponsor && locked.toLowerCase() !== linkSponsor.toLowerCase());
+
   useEffect(() => {
+    if (locked) {
+      setSponsor(locked);
+      return;
+    }
     if (isAddress(fromLink)) setSponsor(getAddress(fromLink));
-  }, [fromLink]);
+  }, [fromLink, locked]);
 
   useEffect(() => {
-    if (!sponsor && isAddress(referrerWallet || "")) setSponsor(getAddress(referrerWallet));
-  }, [referrerWallet, sponsor]);
+    if (!returning) return;
+    clearJoinReturn();
+    navigate("/dashboard/referral", { replace: true });
+  }, [returning, navigate]);
 
   useEffect(() => {
+    if (!chainReferrer) return;
+    clearJoinReturn();
+    if (!differentSponsor) navigate("/dashboard/referral", { replace: true });
+  }, [chainReferrer, differentSponsor, navigate]);
+
+  useEffect(() => {
+    if (locked || sessionStorage.getItem("mytree_sponsor_confirm")) {
+      clearJoinReturn();
+      return;
+    }
     markJoinReturn();
     prepareWalletReturn();
-  }, [fromLink]);
+  }, [fromLink, locked]);
 
   async function confirm(event) {
     event.preventDefault();
@@ -54,10 +75,26 @@ export default function JoinReferral() {
       setNotice(check.message);
       return;
     }
+    if (locked) {
+      setNotice(differentSponsor ? "This wallet is already registered with another sponsor. That sponsor cannot be changed." : "");
+      clearJoinReturn();
+      navigate("/dashboard/referral");
+      return;
+    }
     setNotice("");
-    const saved = await activate(check.sponsor);
-    if (!saved) return;
     clearJoinReturn();
+    sessionStorage.setItem("mytree_sponsor_confirm", "1");
+    markPageReturn("/dashboard/referral");
+    await prepareWalletReturn({ persist: true });
+    const saved = await activate(check.sponsor);
+    if (!saved) {
+      sessionStorage.removeItem("mytree_sponsor_confirm");
+      clearPageReturn();
+      markJoinReturn();
+      return;
+    }
+    sessionStorage.removeItem("mytree_sponsor_confirm");
+    clearPageReturn();
     navigate("/dashboard/referral");
   }
 
@@ -84,28 +121,35 @@ export default function JoinReferral() {
             </div>
 
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Sponsor wallet</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{locked ? "Registered sponsor" : "Sponsor wallet"}</span>
               <input
-                value={sponsor}
-                onChange={(e) => setSponsor(e.target.value)}
+                value={locked || sponsor}
+                onChange={(e) => { if (!locked) setSponsor(e.target.value); }}
+                readOnly={Boolean(locked)}
                 autoComplete="off"
                 spellCheck="false"
-                aria-invalid={!check.ok}
+                aria-invalid={!locked && !check.ok}
                 aria-describedby="sponsor-status"
                 placeholder="0x…"
-                className={`mt-2 w-full rounded-control border bg-ink px-4 py-3 text-sm text-foam outline-none ${check.ok ? "border-mint/40" : "border-clay/60"}`}
+                className={`mt-2 w-full rounded-control border bg-ink px-4 py-3 text-sm text-foam outline-none ${locked || check.ok ? "border-mint/40" : "border-clay/60"}`}
               />
-              <p id="sponsor-status" className={`mt-2 text-sm ${check.ok ? "text-mint" : "text-clay"}`} role="status">{check.message}</p>
-              {check.ok && <p className="mt-1 text-xs text-slate-400">Shown as {shortAddress(check.sponsor)}</p>}
+              {differentSponsor ? (
+                <p id="sponsor-status" className="mt-2 text-sm text-sand" role="status">This wallet is already registered with {shortAddress(locked)}. The link sponsor {shortAddress(linkSponsor)} cannot replace it.</p>
+              ) : (
+                <>
+                  <p id="sponsor-status" className={`mt-2 text-sm ${check.ok ? "text-mint" : "text-clay"}`} role="status">{locked ? "Sponsor already registered. It cannot be changed." : check.message}</p>
+                  {check.ok && !locked && <p className="mt-1 text-xs text-slate-400">Shown as {shortAddress(check.sponsor)}</p>}
+                </>
+              )}
             </label>
 
-            <button type="submit" disabled={!isConnected || !check.ok || busy} className="flex min-h-11 w-full items-center justify-center rounded-control bg-leaf px-4 py-3 font-semibold text-ink disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40">
-              {busy ? "Waiting for wallet…" : "Confirm sponsor"}
+            <button type="submit" disabled={!isConnected || (!locked && !check.ok) || busy} className="flex min-h-11 w-full items-center justify-center rounded-control bg-leaf px-4 py-3 font-semibold text-ink disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40">
+              {busy ? "Waiting for wallet…" : locked ? "Go to dashboard" : "Confirm sponsor"}
             </button>
             {(notice || error) && <p className="text-sm text-clay" role="alert">{notice || error}</p>}
           </form>
 
-          <p className="mt-5 text-sm text-slate-400">Stay on this page after connecting. The dashboard opens only after Confirm sponsor is approved in the wallet.</p>
+          <p className="mt-5 text-sm text-slate-400">{locked ? "The first sponsor stays with this wallet. A later referral link cannot change it." : "After the wallet approves, this page opens the dashboard. The first sponsor cannot be changed later."}</p>
         </section>
       </main>
       <Footer />

@@ -48,16 +48,24 @@ export function useReferralCode() {
   useEffect(() => {
     if (!address || !sale?.contractAddress || !publicClient) return undefined;
     let cancelled = false;
-    publicClient.readContract({
-      address: sale.contractAddress,
-      abi: presaleAbi,
-      functionName: "referrerOf",
-      args: [getAddress(address)],
-    }).then((bound) => {
-      if (!cancelled && bound && bound !== zeroAddress) setChainReferrer(String(bound).toLowerCase());
-    }).catch(() => {});
+    async function readBound() {
+      try {
+        const bound = await publicClient.readContract({
+          address: sale.contractAddress,
+          abi: presaleAbi,
+          functionName: "referrerOf",
+          args: [getAddress(address)],
+        });
+        if (!cancelled && bound && bound !== zeroAddress) setChainReferrer(String(bound).toLowerCase());
+      } catch {
+        // The contract read retries on the next interval.
+      }
+    }
+    readBound();
+    const timer = setInterval(readBound, 4000);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
   }, [address, sale?.contractAddress, publicClient]);
 
@@ -126,6 +134,8 @@ export function useReferralCode() {
     landingCode,
     shareLink: address ? referralLink(getAddress(address)) : "",
     referrerWallet: referrer,
+    chainReferrer,
+    savedReferrer: chainReferrer || profile?.referredBy || referrerWallet || "",
     profile,
     isConnected,
     busy,
