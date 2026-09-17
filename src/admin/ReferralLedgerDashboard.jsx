@@ -23,7 +23,7 @@ export default function ReferralLedgerDashboard() {
   return (
     <div>
       <h1 className="font-display text-h2 text-foam">Referral ledger</h1>
-      <p className="mt-2 max-w-2xl text-sm text-slate-400">Each row is referral income accrued on a confirmed USDT purchase. Claimable means the tokens are still in the contract until that wallet claims. A claim sends only $MYTREE.</p>
+      <p className="mt-2 max-w-2xl text-sm text-slate-400">Each row is referral income accrued on a confirmed USDT purchase. A confirmed purchase with no row means the sponsor had not already bought, so that share was not paid to anyone. Claimable means the tokens are still in the contract until that wallet claims. A claim sends only $MYTREE.</p>
       <h2 className="mt-6 text-sm uppercase tracking-wider text-white/40">Top referrers</h2>
       <ul className="mt-2 space-y-2 text-sm">
         {leaders.map((user) => (

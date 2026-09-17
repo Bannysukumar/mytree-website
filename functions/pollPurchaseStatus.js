@@ -107,8 +107,8 @@ async function syncChainPurchases() {
   const latest = await rpc.getBlockNumber();
   const stateRef = db().collection("config").doc("purchaseSync");
   const state = (await stateRef.get()).data() || {};
-  let cursor = Number(state.lastBlock || latest - 1500);
-  if (cursor < latest - 3000) cursor = latest - 3000;
+  let cursor = Number(state.lastBlock || latest - 8000);
+  if (cursor < latest - 20000) cursor = latest - 20000;
   if (cursor >= latest) return;
 
   const iface = new Interface([
@@ -116,7 +116,7 @@ async function syncChainPurchases() {
     "event ReferralAccrued(address indexed earner, uint256 amount)",
   ]);
   const topic = id("TokensPurchased(address,uint256,uint256)");
-  const stop = Math.min(cursor + 180, latest);
+  const stop = Math.min(cursor + 900, latest);
   while (cursor < stop) {
     const to = Math.min(cursor + 8, stop);
     const logs = await rpc.getLogs({

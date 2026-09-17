@@ -50,6 +50,7 @@ async function recordConfirmedPurchase(ref, data, receipt) {
       blockNumber: receipt.blockNumber,
       confirmedAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
+      referralSkippedReason: bonuses.length ? "" : "No referral income was paid. The sponsor had not already bought, or no sponsor was bound, so that share was not given to anyone else.",
     },
     { merge: true }
   );

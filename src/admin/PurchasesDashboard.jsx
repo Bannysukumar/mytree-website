@@ -11,7 +11,7 @@ export default function PurchasesDashboard() {
   useEffect(() => {
     if (!firebaseReady) return undefined;
     const q = query(collection(db, "purchases"), orderBy("createdAt", "desc"), limit(40));
-    return onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+    return onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setRows([]));
   }, []);
   const raised = rows.filter((r) => r.status === "confirmed").length;
   return (
@@ -29,6 +29,7 @@ export default function PurchasesDashboard() {
           { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status} /> },
           { key: "buyer", label: "Buyer", render: (row) => shortAddress(row.buyer) },
           { key: "tokensWhole", label: "Tokens", render: (row) => formatNumber(row.tokensWhole || 0, 4) },
+          { key: "referralSkippedReason", label: "Referral", render: (row) => row.referralSkippedReason ? "Skipped" : row.status === "confirmed" ? "Recorded" : "Waiting" },
           { key: "txHash", label: "Tx", render: (row) => <span className="text-slate-400">{shortAddress(row.txHash)}</span> },
         ]}
       />

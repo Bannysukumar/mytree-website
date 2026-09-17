@@ -114,6 +114,6 @@ export async function runUsdtPurchase({
   clearPendingBuy();
   clearBuyReturn();
   clearPageReturn();
-  rememberPendingTx({ hash, buyer });
+  rememberPendingTx({ hash, buyer, referrer: sponsor });
   return hash;
 }
