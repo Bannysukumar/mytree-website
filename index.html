@@ -23,6 +23,17 @@
       (function () {
         try {
           var path = "";
+          var buySaved = localStorage.getItem("mytree_buy_return") || "";
+          if (buySaved.charAt(0) === "{") {
+            try {
+              var buy = JSON.parse(buySaved);
+              if (buy && buy.path && Date.now() - Number(buy.at) < 180000) path = buy.path;
+            } catch (err) { path = ""; }
+          }
+          if (!path) {
+            var buyCookie = document.cookie.match(/(?:^|; )mytree_buy_return=([^;]*)/);
+            if (buyCookie) path = decodeURIComponent(buyCookie[1]);
+          }
           var saved = localStorage.getItem("mytree_page_return") || "";
           if (saved.charAt(0) === "{") {
             try { path = JSON.parse(saved).path || ""; } catch (err) { path = ""; }

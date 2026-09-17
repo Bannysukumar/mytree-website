@@ -5,12 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import { WagmiProvider } from "wagmi";
 import App from "./App";
 import { SiteContentProvider } from "./hooks/useSiteContent";
-import { readJoinReturn, readPageReturn } from "./lib/dashRedirect";
+import { readBuyReturn, readJoinReturn, readPageReturn } from "./lib/dashRedirect";
 import { prepareWalletReturn, wagmiConfig } from "./lib/wagmi";
 import "./index.css";
 
 const here = `${window.location.pathname}${window.location.search}`;
-const back = window.location.pathname === "/" ? (readPageReturn() || readJoinReturn()) : "";
+const back = window.location.pathname === "/" ? (readBuyReturn() || readPageReturn() || readJoinReturn()) : "";
 if (back && here !== back) window.history.replaceState(null, "", back);
 prepareWalletReturn();
 

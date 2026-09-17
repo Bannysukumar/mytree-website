@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import { useReferralCode } from "../hooks/useReferralCode";
 import { useWallet } from "../hooks/useWallet";
 import { shortAddress } from "../lib/format";
-import { clearJoinReturn, clearPageReturn, markJoinReturn, markPageReturn } from "../lib/dashRedirect";
+import { clearJoinReturn, clearPageReturn, markJoinReturn, markPageReturn, readBuyReturn } from "../lib/dashRedirect";
 import { prepareWalletReturn } from "../lib/wagmi";
 
 function sponsorState(value, ownAddress) {
@@ -45,7 +45,7 @@ export default function JoinReferral() {
   }, [fromLink, locked]);
 
   useEffect(() => {
-    if (!returning) return;
+    if (!returning || readBuyReturn()) return;
     clearJoinReturn();
     navigate("/dashboard/referral", { replace: true });
   }, [returning, navigate]);

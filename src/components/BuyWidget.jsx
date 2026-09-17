@@ -23,7 +23,7 @@ export default function BuyWidget({ embedded = false }) {
   const { writeContractAsync, isPending } = useWriteContract();
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: Number(sale?.chainId || 56) });
-  const [usd, setUsd] = useState(25);
+  const [usd, setUsd] = useState(() => readPendingBuy()?.displayAmount || 25);
   const [hash, setHash] = useState("");
   const [error, setError] = useState("");
   const [note, setNote] = useState("");
@@ -89,6 +89,7 @@ export default function BuyWidget({ embedded = false }) {
         usdtAddress: usdtTokenAddress(sale),
         buyer: address,
         amount: usdtAmount,
+        displayAmount: String(usd),
         referrer,
         resume: Boolean(savedAmount),
         onStatus: setNote,

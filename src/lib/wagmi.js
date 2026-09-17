@@ -30,14 +30,14 @@ function applyWalletReturn(metadata, target) {
   };
 }
 
-export async function prepareWalletReturn({ persist = false } = {}) {
-  const path = `${window.location.pathname}${window.location.search}`;
-  const here = `${window.location.origin}${path}`;
-  const target = path && path !== "/" ? here : siteUrl;
+export async function prepareWalletReturn({ persist = false, path } = {}) {
+  const chosen = path || `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const safe = chosen && chosen !== "/" ? chosen : "/#buy";
+  const target = `${window.location.origin}${safe}`;
   applyWalletReturn(walletMetadata, target);
   const { markJoinReturn, markPageReturn } = await import("./dashRedirect");
-  if (path.startsWith("/join")) markJoinReturn(path);
-  if (persist) markPageReturn(path);
+  if (!path && safe.startsWith("/join")) markJoinReturn(safe);
+  if (persist) markPageReturn(safe);
   try {
     const { OptionsController } = await import("@web3modal/core");
     OptionsController.setMetadata({ ...walletMetadata, redirect: { ...walletMetadata.redirect } });

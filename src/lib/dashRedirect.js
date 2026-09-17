@@ -1,6 +1,12 @@
 const KEY = "mytree_go_dash";
 const JOIN_KEY = "mytree_join_return";
 const PAGE_KEY = "mytree_page_return";
+const BUY_KEY = "mytree_buy_return";
+
+export function herePath() {
+  const path = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  return path === "/" ? "/#buy" : path;
+}
 
 export function markDashboardRedirect() {
   if (window.location.pathname.startsWith("/join")) {
@@ -33,7 +39,7 @@ export function clearJoinReturn() {
   document.cookie = `${JOIN_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
-export function markPageReturn(path = `${window.location.pathname}${window.location.search}`) {
+export function markPageReturn(path = herePath()) {
   if (!path.startsWith("/") || path === "/") return;
   localStorage.setItem(PAGE_KEY, JSON.stringify({ path, at: Date.now() }));
   document.cookie = `${PAGE_KEY}=${encodeURIComponent(path)}; Path=/; Max-Age=1200; SameSite=Lax`;
@@ -54,6 +60,32 @@ export function readPageReturn() {
 export function clearPageReturn() {
   localStorage.removeItem(PAGE_KEY);
   document.cookie = `${PAGE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
+}
+
+export function armBuyReturn(path = herePath()) {
+  const target = path && path !== "/" ? path : "/#buy";
+  sessionStorage.removeItem("mytree_sponsor_confirm");
+  clearJoinReturn();
+  markPageReturn(target);
+  localStorage.setItem(BUY_KEY, JSON.stringify({ path: target, at: Date.now() }));
+  document.cookie = `${BUY_KEY}=${encodeURIComponent(target)}; Path=/; Max-Age=180; SameSite=Lax`;
+}
+
+export function readBuyReturn() {
+  try {
+    const data = JSON.parse(localStorage.getItem(BUY_KEY) || "null");
+    if (data?.path?.startsWith("/") && Date.now() - Number(data.at) < 3 * 60 * 1000) return data.path;
+  } catch {
+    // The wallet's other browser can only see the cookie.
+  }
+  const match = document.cookie.match(new RegExp(`(?:^|; )${BUY_KEY}=([^;]*)`));
+  const path = match ? decodeURIComponent(match[1]) : "";
+  return path.startsWith("/") && path !== "/" ? path : "";
+}
+
+export function clearBuyReturn() {
+  localStorage.removeItem(BUY_KEY);
+  document.cookie = `${BUY_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
 export function takeDashboardRedirect() {

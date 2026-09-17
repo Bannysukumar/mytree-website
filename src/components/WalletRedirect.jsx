@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWallet } from "../hooks/useWallet";
-import { readJoinReturn, takeDashboardRedirect } from "../lib/dashRedirect";
+import { readBuyReturn, readJoinReturn, takeDashboardRedirect } from "../lib/dashRedirect";
 
 export default function WalletRedirect() {
   const { isConnected } = useWallet();
@@ -9,8 +9,13 @@ export default function WalletRedirect() {
   const { pathname, search } = useLocation();
 
   useEffect(() => {
+    const buyBack = readBuyReturn();
+    const here = `${pathname}${search}${window.location.hash}`;
+    if (buyBack && here !== buyBack) {
+      navigate(buyBack, { replace: true });
+      return;
+    }
     const back = readJoinReturn();
-    const here = `${pathname}${search}`;
     if (back && pathname === "/" && here !== back) {
       takeDashboardRedirect();
       navigate(back, { replace: true });

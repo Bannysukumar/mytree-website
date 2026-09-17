@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useLocation, useSearchParams } from "react-router-dom";
 import WalletRedirect from "./components/WalletRedirect";
-import { readJoinReturn, readPageReturn } from "./lib/dashRedirect";
+import { readBuyReturn, readJoinReturn, readPageReturn } from "./lib/dashRedirect";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -9,7 +9,7 @@ import JoinReferral from "./pages/JoinReferral";
 function HomeEntry() {
   const [params] = useSearchParams();
   const ref = params.get("ref");
-  const back = readPageReturn() || readJoinReturn();
+  const back = readBuyReturn() || readPageReturn() || readJoinReturn();
   if (back) return <Navigate to={back} replace />;
   if (ref) return <Navigate to={`/join?ref=${encodeURIComponent(ref)}`} replace />;
   return <Home />;

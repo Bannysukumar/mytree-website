@@ -1,7 +1,7 @@
 import { getAddress, zeroAddress } from "viem";
 import { erc20Abi, presaleAbi } from "./contractConfig";
-import { clearPageReturn } from "./dashRedirect";
-import { clearPendingBuy, savePendingBuy } from "./pendingBuy";
+import { armBuyReturn, clearBuyReturn, clearPageReturn, herePath } from "./dashRedirect";
+import { clearPendingBuy, readPendingBuy, savePendingBuy } from "./pendingBuy";
 import { rememberPendingTx } from "./referralUtils";
 import { prepareWalletReturn } from "./wagmi";
 
@@ -50,8 +50,14 @@ export async function runUsdtPurchase({
   referrer,
   resume = false,
   onStatus,
+  returnPath,
+  displayAmount = "",
 }) {
-  await prepareWalletReturn({ persist: true });
+  const existing = resume ? readPendingBuy() : null;
+  const back = returnPath || existing?.returnPath || herePath();
+  const shown = String(displayAmount || existing?.displayAmount || "");
+  armBuyReturn(back);
+  await prepareWalletReturn({ persist: true, path: back });
   if (!resume) clearPendingBuy();
   if (currentChainId !== chainId && switchChainAsync) {
     onStatus?.("Approve the network switch in your wallet.");
@@ -66,6 +72,8 @@ export async function runUsdtPurchase({
     chainId,
     amount: spend.toString(),
     referrer: sponsor,
+    displayAmount: shown,
+    returnPath: back,
   };
   savePendingBuy({ ...pending, step: "approve" });
 
@@ -79,7 +87,8 @@ export async function runUsdtPurchase({
   }
   if (allowed < spend) {
     onStatus?.("Approve the USDT spend in your wallet. Stay on this page after approving.");
-    await prepareWalletReturn({ persist: true });
+    armBuyReturn(back);
+    await prepareWalletReturn({ persist: true, path: back });
     const approval = await writeContractAsync({
       address: usdtAddress,
       abi: erc20Abi,
@@ -93,7 +102,8 @@ export async function runUsdtPurchase({
 
   savePendingBuy({ ...pending, step: "buy" });
   onStatus?.("Approve the token transfer in your wallet.");
-  await prepareWalletReturn({ persist: true });
+  armBuyReturn(back);
+  await prepareWalletReturn({ persist: true, path: back });
   const hash = await writeContractAsync({
     address: getAddress(saleAddress),
     abi: presaleAbi,
@@ -102,6 +112,7 @@ export async function runUsdtPurchase({
     chainId,
   });
   clearPendingBuy();
+  clearBuyReturn();
   clearPageReturn();
   rememberPendingTx({ hash, buyer });
   return hash;

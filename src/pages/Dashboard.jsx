@@ -369,7 +369,7 @@ function BuyPanel({ config, mode }) {
   const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: Number(price.sale?.chainId || 56) });
   const [currencyId, setCurrencyId] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(() => readPendingBuy()?.displayAmount || "");
   const [status, setStatus] = useState("");
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState(null);
@@ -455,6 +455,7 @@ function BuyPanel({ config, mode }) {
         usdtAddress: usdtTokenAddress(sale),
         buyer: address,
         amount: usdtAmount,
+        displayAmount: String(amount || saved?.displayAmount || ""),
         referrer: sponsor,
         resume: Boolean(saved),
         onStatus: setStatus,
