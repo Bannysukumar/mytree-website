@@ -21,7 +21,7 @@ import { clearPageReturn } from "../lib/dashRedirect";
 import { readPendingBuy } from "../lib/pendingBuy";
 import { prepareWalletReturn } from "../lib/wagmi";
 import { runExclusive, runUsdtPurchase, walletBusy } from "../lib/runPurchase";
-import { childrenOf, currentRank, fill, inPeriod, nextMilestone, spendOf, visibleNav } from "../dashboard/stats";
+import { childrenOf, currentRank, inPeriod, nextMilestone, spendOf, visibleNav } from "../dashboard/stats";
 import * as icons from "lucide-react";
 
 function Icon({ name, size = 16 }) {
@@ -141,7 +141,7 @@ export default function Dashboard() {
       </aside>
       <div className="min-w-0">
         <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-white/10 bg-ink/80 px-4 py-3 backdrop-blur-md md:px-8">
-          <p className="font-display text-lg text-foam">{items.find((item) => item.id === active)?.label || "Dashboard"}</p>
+          <p className="font-display text-lg text-foam">{(config?.nav || []).find((item) => item.id === active)?.label || "Dashboard"}</p>
           <ConnectButton />
         </header>
       <main className="mx-auto w-full max-w-[1400px] px-4 py-8 md:px-8 md:py-10">
@@ -160,8 +160,13 @@ export default function Dashboard() {
         {config && active === "leaderboard" && <LeaderView config={config} purchases={purchases} winners={dash.winners} />}
         {config && active === "claim" && <ClaimView config={config} purchases={purchases} address={address} />}
         {config && active === "mine" && <TxList title={config.copy?.mineTitle} rows={mineRows(purchases, address)} empty={config.copy?.noTransactions} />}
-        {config && active === "live" && <TxList title={config.copy?.liveTitle} rows={purchases} empty={config.copy?.noTransactions} />}
-        {config && active === "transactions" && <TxList title={config.copy?.mineTitle} rows={mineRows(purchases, address)} empty={config.copy?.noTransactions} />}
+        {config && active === "live" && <TxList title={config.copy?.liveTitle} rows={purchases} empty={config.copy?.noTransactions} showBuyer />}
+        {config && active === "transactions" && (
+          <div className="space-y-6">
+            <TxList title={config.copy?.mineTitle} rows={mineRows(purchases, address)} empty={config.copy?.noTransactions} />
+            <TxList title={config.copy?.liveTitle} rows={purchases} empty={config.copy?.noTransactions} showBuyer />
+          </div>
+        )}
         {config && active === "profile" && <ProfileView config={config} address={address} purchases={purchases} />}
       </main>
       </div>
@@ -203,7 +208,7 @@ function HomeView({ config, address, purchases, onGo }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-caption uppercase text-slate-400">Milestones</p>
-            <p className="mt-2 max-w-xl text-sm text-slate-300">{!stats.count ? copy.streakStart : next ? fill(copy.levelUp, { amount: formatUsd(Math.max(0, Number(next.spendUsd || 0) - stats.spend)) }) : copy.streakDone}</p>
+            <p className="mt-2 max-w-xl text-sm text-slate-300">{milestoneNote(copy, next, stats)}</p>
           </div>
           <button type="button" onClick={copyAddress} className="inline-flex min-h-11 items-center gap-2 rounded-control border border-white/10 px-3 text-sm text-mint">
             <Copy size={14} aria-hidden="true" /> {shortAddress(address)}
@@ -229,6 +234,17 @@ function HomeView({ config, address, purchases, onGo }) {
       {(config.products || []).length > 0 && <Products config={config} address={address} />}
     </div>
   );
+}
+
+function milestoneNote(copy, next, stats) {
+  if (!stats.count) return copy.streakStart;
+  if (!next) return copy.streakDone;
+  const usdLeft = Math.max(0, Number(next.spendUsd || 0) - stats.spend);
+  const buysLeft = Math.max(0, Number(next.purchaseCount || 0) - stats.count);
+  const parts = [];
+  if (usdLeft > 0) parts.push(`${formatUsd(usdLeft)} more in purchases`);
+  if (buysLeft > 0) parts.push(`${buysLeft} more ${buysLeft === 1 ? "buy" : "buys"}`);
+  return parts.length ? `You need ${parts.join(" and ")} to level up` : copy.streakDone;
 }
 
 function Glyph({ value, size = 16 }) {
@@ -604,7 +620,7 @@ function ContractUpliner({ address }) {
           <p className="mt-2 text-sm text-mint">Read from the sale contract. This binding cannot be changed.</p>
         </>
       ) : (
-        <p className="mt-2 text-sm text-sand">No upliner is bound on the contract yet. A buy will not pay a sponsor until Confirm sponsor is approved.</p>
+        <p className="mt-2 text-sm text-sand">No upliner is bound on the contract yet. Confirm sponsor, or include that sponsor on the next buy, and the contract will bind them.</p>
       )}
     </div>
   );
@@ -642,6 +658,7 @@ function ReferralView({ config, compact }) {
 }
 
 function LeaderView({ config, purchases, winners }) {
+  const price = useTokenPrice();
   const [mode, setMode] = useState("all");
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState(false);
@@ -654,13 +671,13 @@ function LeaderView({ config, purchases, winners }) {
       if (!id) return;
       grouped[id] = grouped[id] || { wallet: id, volume: 0, spend: 0 };
       grouped[id].volume += Number(row.tokensWhole || 0);
-      grouped[id].spend += Number(row.amountUsd || 0);
+      grouped[id].spend += Number(row.amountUsd || 0) || Number(row.tokensWhole || 0) * Number(price.priceUsd || 0);
     });
     const key = board.criteria === "spendUsd" ? "spend" : "volume";
     return Object.values(grouped).sort((a, b) => b[key] - a[key]);
-  }, [purchases, mode, board.criteria]);
+  }, [purchases, mode, board.criteria, price.priceUsd]);
   const slice = rows.slice(page * size, page * size + size);
-  const resetAt = board.resetAt ? Date.parse(board.resetAt) : 0;
+  const resetAt = board.resetAt ? Date.parse(board.resetAt) : (mode === "daily" ? nextUtcMidnight() : 0);
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -681,10 +698,12 @@ function LeaderView({ config, purchases, winners }) {
         {left > 0 && <Countdown ms={left} />}
         <button type="button" className="mt-4 min-h-11 text-sm text-mint" onClick={() => setOpen(true)}>{config.copy?.viewWinners}</button>
       </div>
+      {!slice.length && <p className="mt-6 text-sm text-slate-400">No purchases in this period yet.</p>}
       <ol className="mt-6 space-y-2">
         {slice.map((row, index) => {
           const rank = page * size + index + 1;
-          const prize = (board.prizes || []).find((item) => Number(item.rank) === rank);
+          const prize = mode === "daily" ? (board.prizes || []).find((item) => Number(item.rank) === rank) : null;
+          const metric = board.criteria === "spendUsd" ? formatUsd(row.spend) : `${formatNumber(row.volume, 2)} $MYTREE`;
           return (
             <li key={row.wallet} className={`flex items-center gap-4 rounded-card px-4 py-3 text-sm ${rank === 1 ? "border border-mint/40 bg-mint/10" : "bg-white/5"}`}>
               <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display ${rank === 1 ? "bg-leaf text-ink" : "bg-white/10 text-slate-300"}`} aria-label={`Rank ${rank}`}>
@@ -692,17 +711,19 @@ function LeaderView({ config, purchases, winners }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-foam">{shortAddress(row.wallet)}</span>
-                <span className="text-xs tabular-nums text-slate-400">{formatNumber(board.criteria === "spendUsd" ? row.spend : row.volume, 2)}</span>
+                <span className="text-xs tabular-nums text-slate-400">{metric}</span>
               </span>
               <span className={`tabular-nums ${rank === 1 ? "font-display text-xl text-mint" : "text-slate-300"}`}>{prize ? formatNumber(prize.amount) : "—"}</span>
             </li>
           );
         })}
       </ol>
-      <div className="mt-4 flex gap-2">
-        <button type="button" disabled={page === 0} onClick={() => setPage((n) => n - 1)} className="min-h-11 rounded-control border border-white/15 px-4 text-sm disabled:opacity-40">Prev</button>
-        <button type="button" disabled={(page + 1) * size >= rows.length} onClick={() => setPage((n) => n + 1)} className="min-h-11 rounded-control border border-white/15 px-4 text-sm disabled:opacity-40">Next</button>
-      </div>
+      {rows.length > size && (
+        <div className="mt-4 flex gap-2">
+          <button type="button" disabled={page === 0} onClick={() => setPage((n) => n - 1)} className="min-h-11 rounded-control border border-white/15 px-4 text-sm disabled:opacity-40">Prev</button>
+          <button type="button" disabled={(page + 1) * size >= rows.length} onClick={() => setPage((n) => n + 1)} className="min-h-11 rounded-control border border-white/15 px-4 text-sm disabled:opacity-40">Next</button>
+        </div>
+      )}
       {open && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setOpen(false)}>
           <div className="w-full max-w-md rounded-card bg-pine p-6" onClick={(e) => e.stopPropagation()}>
@@ -716,6 +737,11 @@ function LeaderView({ config, purchases, winners }) {
       )}
     </section>
   );
+}
+
+function nextUtcMidnight() {
+  const now = new Date();
+  return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
 }
 
 function Countdown({ ms }) {
@@ -750,7 +776,7 @@ function statusTone(status) {
   return "warning";
 }
 
-function TxList({ title, rows, empty }) {
+function TxList({ title, rows, empty, showBuyer = false }) {
   const price = useTokenPrice();
   const finalized = (rows || []).filter((row) => ["confirmed", "success", "failed", "pending", "confirming"].includes(row.status));
   return (
@@ -762,7 +788,9 @@ function TxList({ title, rows, empty }) {
           <table className="min-w-[640px] text-left text-sm">
             <thead>
               <tr className="text-caption uppercase text-slate-400">
+                {showBuyer && <th>Buyer</th>}
                 <th>Transaction</th>
+                <th>Amount</th>
                 <th>Status</th>
                 <th>When</th>
                 <th>Explorer</th>
@@ -771,9 +799,13 @@ function TxList({ title, rows, empty }) {
             <tbody>
               {finalized.map((row) => {
                 const link = explorerTx(price.sale?.explorerUrl, row.txHash);
+                const tokens = Number(row.tokensWhole || 0);
+                const paid = Number(row.amountUsd || 0) || tokens * Number(price.priceUsd || 0);
                 return (
                   <tr key={row.id} className="border-t border-white/10">
+                    {showBuyer && <td className="text-foam">{shortAddress(row.buyer)}</td>}
                     <td className="tabular-nums text-foam">{shortAddress(row.txHash || row.buyer)}</td>
+                    <td className="tabular-nums text-slate-300">{tokens ? `${formatNumber(tokens, 2)} · ${formatUsd(paid)}` : "—"}</td>
                     <td><Badge tone={statusTone(row.status)}>{row.status}</Badge></td>
                     <td className="text-slate-400">{txStamp(row)}</td>
                     <td>
@@ -903,7 +935,7 @@ function ProfileView({ config, address, purchases }) {
       <h2 className="font-display text-h2 text-foam">Profile</h2>
       <p className="mt-3 break-all text-sm text-mint">{address}</p>
       <div className="mt-4"><RankBadge rank={rank.current} /></div>
-      <p className="mt-3 text-sm text-white/60">{formatNumber(stats.count)} purchases · {formatUsd(stats.spend)}</p>
+      <p className="mt-3 text-sm text-white/60">{formatNumber(stats.count)} {stats.count === 1 ? "purchase" : "purchases"} · {formatUsd(stats.spend)}</p>
       <button type="button" onClick={() => disconnect()} className="mt-6 min-h-11 rounded-control border border-white/15 px-4 text-sm">Disconnect</button>
     </section>
   );
