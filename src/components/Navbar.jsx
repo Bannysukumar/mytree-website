@@ -6,14 +6,13 @@ import ConnectButton from "./ConnectButton";
 import { useWallet } from "../hooks/useWallet";
 
 const links = [
+  ["Forest", "#forest"],
+  ["Guide", "#guide"],
   ["Tracks", "#tracks"],
-  ["Supply", "#tokenomics"],
   ["Buy", "#buy"],
   ["Donate", "#donate"],
   ["Refer", "#referral"],
   ["Stories", "#stories"],
-  ["Journal", "#journal"],
-  ["Join", "#membership"],
   ["Contact", "#contact"],
 ];
 

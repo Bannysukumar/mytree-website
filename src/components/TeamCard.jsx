@@ -3,7 +3,7 @@ export default function TeamCard({ person }) {
   return (
     <article className="glass overflow-hidden p-0">
       {person.imageUrl ? (
-        <img src={person.imageUrl} alt="" loading="lazy" className="h-44 w-full object-cover" />
+        <img src={person.imageUrl} alt="" loading="lazy" className="h-44 w-full object-cover" onError={(event) => { event.currentTarget.remove(); }} />
       ) : (
         <div className="flex h-44 items-center justify-center bg-mint/10 text-2xl font-semibold text-mint" aria-hidden="true">{initials}</div>
       )}

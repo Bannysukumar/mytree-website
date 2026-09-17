@@ -1,4 +1,4 @@
-import { Bike, Droplets, Trees } from "lucide-react";
+import { Camera, GraduationCap, MapPin, Trees } from "lucide-react";
 
 const accents = {
   mint: "text-mint",
@@ -8,15 +8,18 @@ const accents = {
 
 const icons = {
   plantation: Trees,
-  water: Droplets,
-  mobility: Bike,
+  geotag: MapPin,
+  species: Camera,
+  campus: GraduationCap,
+  water: Trees,
+  mobility: MapPin,
 };
 
 export default function TrackCard({ track }) {
   const Icon = icons[track.id];
   return (
     <article className="glass flex h-full flex-col overflow-hidden p-0 transition duration-200 hover:-translate-y-0.5 hover:border-mint/40">
-      {track.imageUrl && <img src={track.imageUrl} alt="" loading="lazy" className="h-44 w-full object-cover" />}
+      {track.imageUrl && <img src={track.imageUrl} alt="" loading="lazy" className="h-44 w-full object-cover" onError={(event) => { event.currentTarget.remove(); }} />}
       <div className="flex flex-1 flex-col p-5">
         {Icon && (
           <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-control bg-mint/10 text-mint" aria-hidden="true">

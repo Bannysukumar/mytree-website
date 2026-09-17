@@ -28,16 +28,16 @@ export default function Hero({ plain = false }) {
   const slide = hero.slides[index] || hero.slides[0];
 
   return (
-    <section id="top" className={`relative overflow-hidden border-b border-white/10 ${plain ? "mesh" : ""}`}>
+    <section id="top" className="relative overflow-hidden border-b border-white/10 mesh">
       {!plain && slide.imageUrl && (
-        <img src={slide.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={slide.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" onError={(event) => { event.currentTarget.remove(); }} />
       )}
       {!plain && <div className="hero-scrim absolute inset-0" />}
       <div className="page relative grid items-start gap-8 py-10 lg:grid-cols-[1.2fr_400px]">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mint">{plain ? "Buy $MYTREE" : slide.kicker || hero.eyebrow}</p>
-          <h1 className="mt-4 max-w-3xl font-display text-h1 text-foam md:text-display">{plain ? "Pay the published USDT price. INR does not buy tokens." : slide.headline}</h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-200">{plain ? "Connect a wallet on BNB Smart Chain, approve USDT, and confirm. Purchased tokens arrive in that transaction. Referral income is claimed later, as $MYTREE only." : slide.body}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mint">{slide.kicker || hero.eyebrow}</p>
+          <h1 className="mt-4 max-w-3xl font-display text-h1 text-foam md:text-display">{slide.headline}</h1>
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-200">{slide.body}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href={hero.primaryHref || "#buy"} className="inline-flex min-h-11 items-center rounded-md bg-leaf px-5 py-2.5 text-sm font-semibold text-ink hover:opacity-90">
               {hero.primaryCta}
@@ -67,10 +67,10 @@ export default function Hero({ plain = false }) {
           <BuyWidget embedded />
         </div>
       </div>
-      <dl className="relative grid border-t border-white/10 bg-[#0b1220]/90 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="relative grid border-t border-white/10 bg-[#071510]/90 sm:grid-cols-2 lg:grid-cols-4">
         {(hero.stats || []).map((stat) => (
           <div key={stat.id} className="border-white/10 px-5 py-5 md:px-8 lg:border-r lg:last:border-r-0">
-            <dd className="font-display text-3xl tabular-nums text-mint"><CountUp value={statValue(stat, stats)} format={formatNumber} /></dd>
+            <dd className="font-display text-3xl tabular-nums text-mint">{stat.display || <CountUp value={statValue(stat, stats)} format={formatNumber} />}</dd>
             <dt className="mt-1 text-sm text-slate-300">{stat.label}</dt>
           </div>
         ))}

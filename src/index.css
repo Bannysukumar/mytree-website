@@ -4,15 +4,15 @@
 
 :root {
   color-scheme: dark;
-  --bg: #070b14;
-  --card: #151d2b;
-  --fg: #f8fafc;
-  --muted: #94a3b8;
-  --primary: #10b981;
+  --bg: #071510;
+  --card: #10241c;
+  --fg: #f4fbf6;
+  --muted: #a8c4b4;
+  --primary: #059669;
   --cta: #10b981;
-  --accent: #34d399;
-  --border: #243044;
-  --chip: #272f42;
+  --accent: #6ee7b7;
+  --border: #1c4a38;
+  --chip: #163528;
   --warn: #fbbf24;
   --danger: #ef4444;
   --font: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
@@ -45,9 +45,9 @@ body {
 
 .mesh {
   background:
-    radial-gradient(circle at 18% 20%, rgba(16, 185, 129, 0.18), transparent 36%),
-    radial-gradient(circle at 82% 0%, rgba(56, 189, 248, 0.1), transparent 32%),
-    #070b14;
+    radial-gradient(circle at 12% 8%, rgba(16, 185, 129, 0.28), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(132, 204, 22, 0.14), transparent 32%),
+    #071510;
 }
 
 .nav-indicator {
@@ -246,7 +246,7 @@ th {
 }
 
 .theme-dash .glass {
-  background: #151d2b;
+  background: #10241c;
 }
 
 .dash-layout {
@@ -263,7 +263,7 @@ th {
 }
 
 .app-sidebar {
-  background: #0e1520;
+  background: #0c1f17;
   border-right: 1px solid var(--border);
 }
 

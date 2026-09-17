@@ -18,10 +18,10 @@ export default function BannerStrip() {
   const active = Math.min(index, rows.length - 1);
 
   return (
-    <section id="home" className="relative min-h-[72vh] overflow-hidden border-b border-white/10" aria-roledescription="carousel" aria-label="Home banners" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    <section id="home" className="mesh relative min-h-[72vh] overflow-hidden border-b border-white/10" aria-roledescription="carousel" aria-label="Home banners" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       {rows.map((item, i) => (
         <div key={item.id || i} className={`absolute inset-0 transition-opacity duration-700 ${i === active ? "opacity-100" : "pointer-events-none opacity-0"}`} aria-hidden={i !== active}>
-          {item.imageUrl && <img src={item.imageUrl} alt="" className="h-full w-full object-cover" />}
+          {item.imageUrl && <img src={item.imageUrl} alt="" className="h-full w-full object-cover" onError={(event) => { event.currentTarget.remove(); }} />}
           <div className="hero-scrim absolute inset-0" />
         </div>
       ))}

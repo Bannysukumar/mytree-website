@@ -1,6 +1,7 @@
 import BlogCard from "../components/BlogCard";
 import BannerStrip from "../components/BannerStrip";
 import DonateWidget from "../components/DonateWidget";
+import ForestGuide from "../components/ForestGuide";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import LiveBar from "../components/LiveBar";
@@ -32,7 +33,8 @@ export default function Home() {
       <WalletReturnBanner />
       <main id="main">
         <BannerStrip />
-        <Hero plain />
+        <Hero />
+        <ForestGuide />
         <Tracks />
         <TokenomicsChart />
         <DonateWidget />
@@ -42,16 +44,18 @@ export default function Home() {
             {!loading && (testimonials || []).map((item) => <TestimonialCard key={item.id} item={item} />)}
           </div>
         </Section>
+        {gallery.length > 0 && (
         <Section id="gallery" eyebrow="On the ground" title="Work that can be seen.">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {gallery.map((item) => (
               <figure key={item.id} className="overflow-hidden rounded-card border border-white/10 bg-moss">
-                <img src={item.imageUrl} alt="" loading="lazy" className="h-40 w-full object-cover md:h-48" />
+                <img src={item.imageUrl} alt="" loading="lazy" className="h-40 w-full object-cover md:h-48" onError={(event) => { event.currentTarget.remove(); }} />
                 <figcaption className="px-3 py-2 text-sm text-slate-300">{item.title}</figcaption>
               </figure>
             ))}
           </div>
         </Section>
+        )}
         <Section id="team" eyebrow="Stewards" title="The people who check the count.">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {!loading && (team || []).map((person) => <TeamCard key={person.id} person={person} />)}

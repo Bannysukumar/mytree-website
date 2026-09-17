@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#070B14",
-        pine: "#0E1520",
-        moss: "#151D2B",
+        ink: "#071510",
+        pine: "#0C1F17",
+        moss: "#10241C",
         mint: {
           50: "#ECFDF5",
           100: "#D1FAE5",
@@ -38,7 +38,7 @@ export default {
         caption: ["0.75rem", { lineHeight: "1.4", letterSpacing: "0.04em" }],
       },
       borderRadius: {
-        card: "0.875rem",
+        card: "1.25rem",
         control: "0.625rem",
       },
       boxShadow: {

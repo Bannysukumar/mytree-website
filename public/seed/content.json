@@ -1,48 +1,50 @@
 {
   "hero": {
-    "eyebrow": "Mytree Ecosystem",
+    "eyebrow": "Plant. Tag. Protect.",
     "slides": [
       {
         "id": "s1",
-        "kicker": "Mass planting, close to home",
-        "headline": "A forest does not wait for a press release.",
-        "body": "Neighbourhood crews plant, water, and keep watch. $MYTREE is the ledger for that work — not a substitute for it.",
+        "kicker": "A public tree record",
+        "headline": "Give every planted tree a record that outlasts the photograph.",
+        "body": "Mark the spot, name the species, and come back after the rains. $MYTREE funds that work. The record is the tree itself.",
         "imageUrl": "/media/planting.jpg"
       },
       {
         "id": "s2",
-        "kicker": "Blue Water Mission",
-        "headline": "Water remembers every contour we repair.",
-        "body": "We restore ponds, nalas, and village drinking sources, then publish the litres so the number can be checked.",
+        "kicker": "A photo and a pin",
+        "headline": "Name the tree from the place where it actually stands.",
+        "body": "Upload a photo, save the GPS pin, and leave a care note for the next season. A steward can correct the species before the record is treated as verified.",
         "imageUrl": "/media/water.jpg"
       },
       {
         "id": "s3",
-        "kicker": "Proof of green action",
-        "headline": "The climate ledger should belong to the people doing the work.",
-        "body": "Verified tasks earn $MYTREE at the price set in the open. Bonuses, caps, and copy are edited from the admin panel — never buried in the website.",
+        "kicker": "The open sale",
+        "headline": "USDT buys the token. The token does not replace the tree.",
+        "body": "Purchases are USDT on BNB Smart Chain only. INR donations do not mint tokens or pay referrals. Referral income is claimable $MYTREE, and only after the rules on the sale page.",
         "imageUrl": "/media/community.jpg"
       }
     ],
     "stats": [
       {
         "id": "trees",
-        "label": "Saplings still in the ground",
-        "value": 184320,
+        "label": "A pin on every tagged tree",
+        "value": 0,
+        "display": "GPS",
         "suffix": "",
         "liveKey": ""
       },
       {
         "id": "water",
-        "label": "Litres restored",
-        "value": 9200000,
+        "label": "A species note from a photo",
+        "value": 0,
+        "display": "Photo",
         "suffix": "",
         "liveKey": ""
       },
       {
         "id": "people",
-        "label": "Active participants",
-        "value": 12480,
+        "label": "Days before a survival check",
+        "value": 90,
         "suffix": "",
         "liveKey": ""
       },
@@ -54,10 +56,10 @@
         "liveKey": "fundsRaisedInr"
       }
     ],
-    "primaryCta": "Buy $MYTREE",
-    "primaryHref": "#buy",
-    "secondaryCta": "Donate in INR",
-    "secondaryHref": "#donate"
+    "primaryCta": "Tag a tree",
+    "primaryHref": "#forest",
+    "secondaryCta": "Buy $MYTREE",
+    "secondaryHref": "#buy"
   },
   "contact": {
     "email": "hello@mytreeecosystem.org",
@@ -118,37 +120,37 @@
   },
   "tracks": [
     {
-      "id": "plantation",
+      "id": "geotag",
       "order": 1,
-      "title": "Mass Tree Plantation",
-      "tag": "Flagship",
-      "summary": "Ridge-to-village planting crews that stay through the first two monsoons, not just the photo hour.",
-      "details": "Stewards mark pits, record the sapling, and check survival at 90 and 365 days. A dead sapling does not stay on the ledger. Schools, panchayat grounds, and degraded grazing edges are the first sites.",
-      "metric": "90-day survival check",
+      "title": "Geo-tag the tree",
+      "tag": "Location",
+      "summary": "The record starts at the ground, not at a stock photo of a forest.",
+      "details": "Save the GPS pin when the sapling goes in. The next visit, the survival check, and the public map all use that same point.",
+      "metric": "One pin per living tree",
       "accent": "mint",
-      "imageUrl": "/media/planting.jpg"
+      "imageUrl": ""
     },
     {
-      "id": "water",
+      "id": "species",
       "order": 2,
-      "title": "Blue Water Mission",
-      "tag": "Watershed",
-      "summary": "Repair the small structures that decide whether a village well lasts past April.",
-      "details": "We desilt ponds, rebuild check dams, and reopen blocked nalas with local labour. Volumes are counted from partner measurements, not from a slogan. Drinking water and farm recharge are both in scope.",
-      "metric": "Litres, published per site",
+      "title": "Name it from a photo",
+      "tag": "Species",
+      "summary": "A picture is a start. A steward correction is what makes the name hold.",
+      "details": "Upload a leaf, bark, or full-tree photo. The first name can be revised. Care notes cover water, soil, and the first monsoon.",
+      "metric": "Photo, then a review",
       "accent": "foam",
-      "imageUrl": "/media/water.jpg"
+      "imageUrl": ""
     },
     {
-      "id": "mobility",
+      "id": "campus",
       "order": 3,
-      "title": "Green Mobility Survey",
-      "tag": "Field data",
-      "summary": "A commute log that asks how people actually move, then pays only for complete, sane entries.",
-      "details": "Participants record walk, cycle, bus, and shared rides. The survey is a picture of a neighbourhood, not a gadget challenge. Impossible speeds and copy-paste days are dropped before any reward is considered.",
-      "metric": "Daily cap per wallet",
+      "title": "A campus forest",
+      "tag": "Institutions",
+      "summary": "Schools and campuses keep a map their students can walk again next term.",
+      "details": "A class tags the trees on the grounds, follows the same saplings, and shows a public profile that does not end when the planting ceremony does.",
+      "metric": "Return visits, not one photograph",
       "accent": "sand",
-      "imageUrl": "/media/community.jpg"
+      "imageUrl": ""
     }
   ],
   "poga": [
@@ -255,8 +257,8 @@
       "id": "farhan",
       "order": 2,
       "name": "Farhan Qureshi",
-      "role": "Watershed lead",
-      "bio": "Civil engineer who would rather measure a pond before the rains than after the ceremony. He runs Blue Water Mission’s volume checks with local panchayat staff.",
+      "role": "Campus forests",
+      "bio": "Walks school grounds with students and keeps the same pins on the map after the ceremony. A tree that is gone does not stay in the public count.",
       "imageUrl": "/media/water.jpg"
     },
     {
@@ -310,7 +312,7 @@
     {
       "id": "t2",
       "order": 2,
-      "quote": "We desilted the pond we already had. No new name, no new foundation stone. The well at the lower street lasted three weeks longer than last April.",
+      "quote": "The class tagged twenty trees on the school edge and walked them again after the rains. The missing ones were taken off the count. That is the record we wanted.",
       "name": "S. Patil",
       "place": "Gram panchayat member",
       "imageUrl": "/media/water.jpg"
@@ -442,10 +444,10 @@
       "id": "plant",
       "order": 1,
       "enabled": true,
-      "kicker": "Mytree Ecosystem",
-      "title": "A forest does not wait for a press release.",
-      "subtitle": "Crews that stay through the first two monsoons.",
-      "body": "Neighbourhood crews plant, water, and keep watch. $MYTREE records that work. It does not replace it.",
+      "kicker": "Plant. Tag. Protect.",
+      "title": "A tagged tree stays after the planting photograph fades.",
+      "subtitle": "GPS, a species note, and a later check.",
+      "body": "Mark the spot, name the tree, and come back. $MYTREE funds that work. It does not replace the walk.",
       "ctaLabel": "See the tracks",
       "href": "#tracks",
       "imageUrl": "/media/planting.jpg"
@@ -454,10 +456,10 @@
       "id": "water",
       "order": 2,
       "enabled": true,
-      "kicker": "Blue Water Mission",
-      "title": "Water remembers every contour we repair.",
-      "subtitle": "Ponds and nalas measured, then published.",
-      "body": "We restore ponds, nalas, and village drinking sources, then publish the litres so the number can be checked.",
+      "kicker": "Campus forests",
+      "title": "A school can keep a forest its students can walk again.",
+      "subtitle": "The same pins next term, not a new ceremony.",
+      "body": "Each campus tree gets a pin, a name, and a photo. Participation is counted by records that still stand.",
       "ctaLabel": "See the tracks",
       "href": "#tracks",
       "imageUrl": "/media/water.jpg"
@@ -466,9 +468,9 @@
       "id": "circle",
       "order": 3,
       "enabled": true,
-      "kicker": "Proof of green action",
-      "title": "The climate ledger should belong to the people doing the work.",
-      "subtitle": "The ledger belongs to the people doing the work.",
+      "kicker": "Open sale",
+      "title": "The sale pays for the work. The tree is the work.",
+      "subtitle": "USDT on BNB Smart Chain. INR stays a donation.",
       "body": "Verified tasks earn $MYTREE at the published price. Referral income is claimed later, as tokens only. INR does not buy tokens.",
       "ctaLabel": "Read a field note",
       "href": "#stories",

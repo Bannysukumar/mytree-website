@@ -5,7 +5,7 @@ export default function BlogCard({ post }) {
   const [open, setOpen] = useState(false);
   return (
     <article className="glass overflow-hidden p-0">
-      {post.imageUrl && <img src={post.imageUrl} alt="" loading="lazy" className="h-48 w-full object-cover" />}
+      {post.imageUrl && <img src={post.imageUrl} alt="" loading="lazy" className="h-48 w-full object-cover" onError={(event) => { event.currentTarget.remove(); }} />}
       <div className="p-4">
       <p className="text-xs uppercase tracking-wider text-white/40">{post.publishedAt} · {post.author}</p>
       <h3 className="mt-2 font-display text-3xl text-foam">{post.title}</h3>

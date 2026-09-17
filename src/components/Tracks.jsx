@@ -7,9 +7,9 @@ export default function Tracks() {
   return (
     <Section
       id="tracks"
-      eyebrow="Focus areas"
-      title="Three jobs. None of them is a slogan."
-      intro="Planting, water, and field records. Each track is the work itself, not a slogan."
+      eyebrow="What a record holds"
+      title="A tagged tree is more than a planting photo."
+      intro="Location, species, and a later check. The sale does not replace that walk."
     >
       {loading ? <LoadingBlock /> : (
         <div className="grid gap-6 md:grid-cols-3">
