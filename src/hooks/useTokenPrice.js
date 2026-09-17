@@ -33,7 +33,7 @@ export function useTokenPrice() {
   });
 
   return {
-    priceUsd: Number(sale?.priceUsd || 0),
+    priceUsd: price.data ? Number(formatEther(price.data)) : Number(sale?.priceUsd || 0),
     priceInr: Number(sale?.priceInr || 0),
     nativeUsdRate: Number(sale?.nativeUsdRate || 0),
     chainPriceEth: price.data ? formatEther(price.data) : sale?.chainPriceEth || "",

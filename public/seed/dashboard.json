@@ -64,12 +64,12 @@
   },
   "salePanel": {
     "batchLabel": "Batch 1 – Opening",
-    "nextStagePriceUsd": 0.015,
+    "nextStagePriceUsd": 0,
     "nextStageNote": "Next stage price, once the queued trigger is met",
     "impactTabLabel": "Buy Impact Kit"
   },
   "stages": [
-    { "id": "s2", "label": "Stage 2", "priceUsd": 0.015, "triggerTokensSold": 50000000, "triggerDate": "" }
+    { "id": "s2", "label": "Stage 2", "priceUsd": 0, "triggerTokensSold": 50000000, "triggerDate": "" }
   ],
   "aftersale": {
     "batchLabel": "Aftersale",

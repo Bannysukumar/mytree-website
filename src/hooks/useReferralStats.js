@@ -50,7 +50,7 @@ export function useReferralStats() {
   }, [direct, second]);
 
   const boughtBy = new Map();
-  purchases.filter((row) => row.status === "confirmed").forEach((row) => {
+  purchases.filter((row) => ["confirmed", "success"].includes(row.status)).forEach((row) => {
     const buyer = String(row.buyer || "").toLowerCase();
     boughtBy.set(buyer, (boughtBy.get(buyer) || 0) + Number(row.tokensWhole || 0));
   });

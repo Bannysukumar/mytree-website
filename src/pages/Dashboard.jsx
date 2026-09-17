@@ -29,14 +29,31 @@ function Icon({ name, size = 16 }) {
   return <Cmp size={size} />;
 }
 
+function purchaseRows(snap) {
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
 function usePurchases() {
   const [rows, setRows] = useState([]);
   useEffect(() => {
     if (!firebaseReady || !db) return undefined;
-    const q = query(collection(db, "purchases"), orderBy("createdAt", "desc"), limit(200));
-    return onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+    const ordered = query(collection(db, "purchases"), orderBy("createdAt", "desc"), limit(200));
+    const plain = query(collection(db, "purchases"), limit(200));
+    let fallback;
+    const unsub = onSnapshot(ordered, (snap) => setRows(purchaseRows(snap)), () => {
+      fallback = onSnapshot(plain, (snap) => setRows(purchaseRows(snap)), () => setRows([]));
+    });
+    return () => {
+      unsub();
+      fallback?.();
+    };
   }, []);
   return rows;
+}
+
+function mineRows(rows, address) {
+  const me = String(address || "").toLowerCase();
+  return (rows || []).filter((row) => String(row.buyer || "").toLowerCase() === me);
 }
 
 export default function Dashboard() {
@@ -66,7 +83,8 @@ export default function Dashboard() {
   if (!isConnected) {
     return (
       <div id="main" className="theme-dash mesh mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6">
-        <p className="text-caption font-semibold uppercase text-mint">Dashboard</p>
+        <a href="/" className="text-sm text-mint">Back to site</a>
+        <p className="mt-6 text-caption font-semibold uppercase text-mint">Dashboard</p>
         <p className="mt-3 font-display text-h1 text-foam">{config?.copy?.connectTitle || "Connect a wallet to continue"}</p>
         <p className="mt-3 text-slate-300">{config?.copy?.connectBody}</p>
         <div className="mt-8"><ConnectButton /></div>
@@ -141,9 +159,9 @@ export default function Dashboard() {
         {config && active === "referral" && <ReferralView config={config} />}
         {config && active === "leaderboard" && <LeaderView config={config} purchases={purchases} winners={dash.winners} />}
         {config && active === "claim" && <ClaimView config={config} purchases={purchases} address={address} />}
-        {config && active === "mine" && <TxList title={config.copy?.mineTitle} rows={purchases.filter((row) => row.buyer === address?.toLowerCase())} empty={config.copy?.noTransactions} />}
+        {config && active === "mine" && <TxList title={config.copy?.mineTitle} rows={mineRows(purchases, address)} empty={config.copy?.noTransactions} />}
         {config && active === "live" && <TxList title={config.copy?.liveTitle} rows={purchases} empty={config.copy?.noTransactions} />}
-        {config && active === "transactions" && <TxList title={config.copy?.mineTitle} rows={purchases.filter((row) => row.buyer === address?.toLowerCase())} empty={config.copy?.noTransactions} />}
+        {config && active === "transactions" && <TxList title={config.copy?.mineTitle} rows={mineRows(purchases, address)} empty={config.copy?.noTransactions} />}
         {config && active === "profile" && <ProfileView config={config} address={address} purchases={purchases} />}
       </main>
       </div>
@@ -185,7 +203,7 @@ function HomeView({ config, address, purchases, onGo }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-caption uppercase text-slate-400">Milestones</p>
-            <p className="mt-2 max-w-xl text-sm text-slate-300">{stats.count ? fill(copy.levelUp, { amount: formatUsd(Math.max(0, Number(next?.spendUsd || 0) - stats.spend)) }) : copy.streakStart}</p>
+            <p className="mt-2 max-w-xl text-sm text-slate-300">{!stats.count ? copy.streakStart : next ? fill(copy.levelUp, { amount: formatUsd(Math.max(0, Number(next.spendUsd || 0) - stats.spend)) }) : copy.streakDone}</p>
           </div>
           <button type="button" onClick={copyAddress} className="inline-flex min-h-11 items-center gap-2 rounded-control border border-white/10 px-3 text-sm text-mint">
             <Copy size={14} aria-hidden="true" /> {shortAddress(address)}
@@ -215,9 +233,10 @@ function HomeView({ config, address, purchases, onGo }) {
 
 function Glyph({ value, size = 16 }) {
   const text = String(value || "");
+  if (!text) return <icons.Award size={size} aria-hidden="true" />;
   if (text.startsWith("http")) return <img src={text} alt="" className="h-5 w-5 rounded-full object-cover" />;
   if (/^[A-Za-z][A-Za-z0-9]+$/.test(text) && icons[text]) return <Icon name={text} size={size} />;
-  return <icons.Award size={size} aria-hidden="true" />;
+  return <span className="text-base leading-none" aria-hidden="true">{text}</span>;
 }
 
 function RankBadge({ rank, current }) {
@@ -284,11 +303,12 @@ function useTokenHolding(address, token) {
     address: token || undefined,
     abi: erc20Abi,
     functionName: "balanceOf",
-    args: address ? [address] : undefined,
+    args: address ? [getAddress(address)] : undefined,
+    chainId: 56,
     query: { enabled: Boolean(address && token) },
   });
   if (!data) return 0;
-  return Number(data) / 1e18;
+  return Number(formatEther(data));
 }
 
 function BalanceCard({ title, value, address, explorer }) {
@@ -326,7 +346,7 @@ function BuyView({ config, mode }) {
 
 function BuyPanel({ config, mode }) {
   const price = useTokenPrice();
-  const { address, isConnected, chain, balance } = useWallet();
+  const { address, isConnected, chain } = useWallet();
   const referral = useReferralCode();
   const { referral: referralConfig } = useSiteContent();
   const { writeContractAsync, isPending } = useWriteContract();
@@ -338,6 +358,7 @@ function BuyPanel({ config, mode }) {
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState(null);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [showOther, setShowOther] = useState(false);
   const copy = config.copy || {};
   const products = config.products || [];
@@ -349,14 +370,20 @@ function BuyPanel({ config, mode }) {
   const featured = currencies.filter((row) => row.featured !== false);
   const extra = currencies.filter((row) => row.featured === false);
   const currency = currencies.find((row) => row.id === (currencyId || featured[0]?.id)) || featured[0];
-  const unitPrice = mode === "aftersale" ? Number(config.aftersale?.priceUsd || price.priceUsd) : Number(price.priceUsd || 0);
+  const unitPrice = Number(price.priceUsd || 0);
+  const usdtBalance = useReadContract({
+    address: usdtTokenAddress(price.sale),
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: address ? [getAddress(address)] : undefined,
+    chainId: Number(price.sale?.chainId || 56),
+    query: { enabled: Boolean(address && price.sale) },
+  });
   const quote = useMemo(() => {
-    const usd = Number(amount || 0) * Number(currency?.usdRate || 0);
-    const discounted = applied?.type === "price" ? usd * (1 - Number(applied.value) / 100) : usd;
-    let tokens = unitPrice ? discounted / unitPrice : 0;
-    if (applied?.type === "bonus") tokens *= 1 + Number(applied.value) / 100;
-    return { usd: discounted, tokens };
-  }, [amount, currency, unitPrice, applied]);
+    const usd = Number(amount || 0) * Number(currency?.usdRate || 1);
+    const tokens = unitPrice ? usd / unitPrice : 0;
+    return { usd, tokens };
+  }, [amount, currency, unitPrice]);
 
   function applyCode() {
     const found = (config.promoCodes || []).find((row) => String(row.code).toUpperCase() === code.trim().toUpperCase());
@@ -368,14 +395,23 @@ function BuyPanel({ config, mode }) {
       return;
     }
     setApplied(found);
-    setError(copy.promoApplied);
+    setError("Code noted. It does not change the USDT amount or the tokens the contract sends.");
   }
 
   async function buy(resume) {
     setError("");
     const sale = price.sale;
+    const saved = resume && typeof resume === "object" && typeof resume.amount === "string" ? resume : null;
     if (!sale?.contractAddress || !address) return;
-    if (!resume) {
+    if (walletBusy()) {
+      setError("Finish the open wallet request before starting another.");
+      return;
+    }
+    if (!saved) {
+      if (price.paused) {
+        setError("The sale is paused.");
+        return;
+      }
       if (!isUsdtCurrency(currency)) {
         setError(inrNotForTokens);
         return;
@@ -389,10 +425,10 @@ function BuyPanel({ config, mode }) {
     if (referral.referrerWallet && referral.referrerWallet !== address?.toLowerCase()) {
       try { referrer = getAddress(referral.referrerWallet); } catch { referrer = zeroAddress; }
     }
-    const saved = resume && typeof resume === "object" && typeof resume.amount === "string" ? resume : null;
-    const usdtAmount = saved?.amount ? BigInt(saved.amount) : toTokenUnits(amount, Number(sale.usdtDecimals || 18));
     const sponsor = saved?.referrer ? getAddress(saved.referrer) : referrer;
+    setSubmitting(true);
     try {
+      const usdtAmount = saved?.amount ? BigInt(saved.amount) : toTokenUnits(amount, Number(sale.usdtDecimals || 18));
       const hash = await runExclusive(() => runUsdtPurchase({
         writeContractAsync,
         publicClient,
@@ -415,6 +451,8 @@ function BuyPanel({ config, mode }) {
     } catch (err) {
       setStatus("");
       setError(err.shortMessage || err.message || "Wallet rejected the purchase.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -432,7 +470,8 @@ function BuyPanel({ config, mode }) {
   const sold = price.tokensSold || 0;
   const cap = Number(price.sale?.roundSupply || 0);
   const remaining = price.tokensRemaining ?? Math.max(cap - sold, 0);
-  const nextStage = (config.stages || [])[0];
+  const nextStage = (config.stages || []).find((row) => Number(row.priceUsd) > unitPrice);
+  const nextPrice = Number(nextStage?.priceUsd || 0);
 
   return (
     <section className="glass rounded-card p-6 md:p-7">
@@ -449,7 +488,7 @@ function BuyPanel({ config, mode }) {
               <p className="text-caption uppercase text-slate-400">Price</p>
               <p className="mt-1 font-display text-3xl tabular-nums text-mint">{formatUsd(unitPrice)}</p>
             </div>
-            <p className="text-sm text-slate-400">{mode === "aftersale" ? config.aftersale?.batchLabel : config.salePanel?.batchLabel}</p>
+            <p className="text-sm text-slate-400">{price.paused ? "Sale paused" : config.salePanel?.batchLabel}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <p className="text-sm text-slate-400">Tokens sold <span className="tabular-nums text-foam">{formatNumber(sold)}</span></p>
@@ -459,7 +498,7 @@ function BuyPanel({ config, mode }) {
           <p className="text-xs tabular-nums text-slate-400">{formatNumber(remaining)} $MYTREE remaining</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-card bg-white/5 p-4"><p className="text-caption uppercase text-slate-400">Current</p><p className="mt-1 text-xl tabular-nums text-mint">{formatUsd(unitPrice)}</p></div>
-            <div className="rounded-card bg-white/5 p-4"><p className="text-caption uppercase text-slate-400">{nextStage?.label || "Next stage"}</p><p className="mt-1 text-xl tabular-nums">{formatUsd(nextStage?.priceUsd || config.salePanel?.nextStagePriceUsd || 0)}</p></div>
+            <div className="rounded-card bg-white/5 p-4"><p className="text-caption uppercase text-slate-400">{nextPrice ? nextStage.label : "This round"}</p><p className="mt-1 text-xl tabular-nums">{nextPrice ? formatUsd(nextPrice) : formatNumber(remaining)}</p></div>
           </div>
           <div className="flex flex-wrap gap-2">
             {featured.map((row) => (
@@ -476,7 +515,7 @@ function BuyPanel({ config, mode }) {
           )}
           <div className="flex gap-2">
             <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="USDT amount" className="min-h-12 flex-1 rounded-control border border-white/10 bg-ink px-4 py-3 text-2xl tabular-nums" />
-            <button type="button" className="min-h-12 rounded-control border border-white/15 px-4 text-sm" onClick={() => setAmount(String(maxAmount(balance, currency)))}>{copy.max || "MAX"}</button>
+            <button type="button" className="min-h-12 rounded-control border border-white/15 px-4 text-sm" onClick={() => setAmount(maxUsdt(usdtBalance.data, price.sale))}>{copy.max || "MAX"}</button>
           </div>
           <p className="text-xs text-slate-400">{copy.minLabel} {price.sale?.minPurchaseUsd ?? currency?.min} {currency?.symbol}</p>
           <p className="text-sm">{copy.worthLabel}: <span className="tabular-nums text-mint"><CountUp value={quote.tokens} format={(n) => formatNumber(n, 2)} /></span></p>
@@ -492,9 +531,9 @@ function BuyPanel({ config, mode }) {
             <input value={code} onChange={(e) => setCode(e.target.value)} placeholder={copy.promoLabel} aria-label={copy.promoLabel} className="min-h-11 flex-1 rounded-control border border-white/10 bg-ink px-4 text-sm" />
             <button type="button" onClick={applyCode} className="min-h-11 rounded-control border border-white/15 px-4 text-sm">{copy.apply}</button>
           </div>
-          <button type="button" disabled={isPending || !saleReady(price, quote) || !isConnected} onClick={() => buy()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
-            {isPending && <icons.Loader2 size={16} className="animate-spin" aria-hidden="true" />}
-            {isPending ? "Waiting for wallet…" : copy.buyCta}
+          <button type="button" disabled={submitting || isPending || price.paused || !saleReady(price, quote) || !isConnected} onClick={() => buy()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
+            {(submitting || isPending) && <icons.Loader2 size={16} className="animate-spin" aria-hidden="true" />}
+            {submitting || isPending ? "Waiting for wallet…" : copy.buyCta}
           </button>
           {status && <p className="mt-3 text-sm text-mint">{status}</p>}
           {error && <p className="mt-3 text-sm text-sand">{error}</p>}
@@ -511,9 +550,13 @@ function saleReady(price, quote) {
   return Boolean(price.sale?.contractAddress) && amount > 0 && amount >= min && (!max || amount <= max);
 }
 
-function maxAmount(balance, currency) {
-  if (!currency || currency.kind !== "native") return "";
-  return Number(balance?.formatted || 0).toFixed(6);
+function maxUsdt(raw, sale) {
+  if (!raw) return "";
+  const held = Number(formatEther(raw));
+  const cap = Number(sale?.maxPurchaseUsd || 0);
+  const next = cap ? Math.min(held, cap) : held;
+  if (!Number.isFinite(next) || next <= 0) return "";
+  return String(Math.floor(next * 1e6) / 1e6);
 }
 
 function DownlineList({ rows }) {
@@ -606,7 +649,7 @@ function LeaderView({ config, purchases, winners }) {
   const size = Number(board.pageSize || 10);
   const rows = useMemo(() => {
     const grouped = {};
-    purchases.filter((row) => row.status === "confirmed" && inPeriod(row, mode)).forEach((row) => {
+    purchases.filter((row) => ["confirmed", "success"].includes(row.status) && inPeriod(row, mode)).forEach((row) => {
       const id = row.buyer;
       if (!id) return;
       grouped[id] = grouped[id] || { wallet: id, volume: 0, spend: 0 };
@@ -726,7 +769,7 @@ function TxList({ title, rows, empty }) {
               </tr>
             </thead>
             <tbody>
-              {finalized.slice(0, 8).map((row) => {
+              {finalized.map((row) => {
                 const link = explorerTx(price.sale?.explorerUrl, row.txHash);
                 return (
                   <tr key={row.id} className="border-t border-white/10">
@@ -762,7 +805,7 @@ function ClaimView({ config, address }) {
     address: sale?.contractAddress,
     abi: presaleAbi,
     functionName: "claimable",
-    args: address ? [address] : undefined,
+    args: address ? [getAddress(address)] : undefined,
     chainId: Number(sale?.chainId || 56),
     query: { enabled },
   });
@@ -817,7 +860,7 @@ function ClaimView({ config, address }) {
       <p className="mt-3 text-slate-300">Referral income is claimable $MYTREE. Claiming sends only tokens to this wallet. USDT is never sent, and INR donations never earn a claim.</p>
       <p className="mt-6 font-display text-4xl tabular-nums text-mint">{formatNumber(Number(formatEther(amount)), 4)} $MYTREE</p>
       <p className="mt-4 text-sm text-slate-400">{ready ? "Claim transfers these tokens now." : "Nothing to claim yet."}</p>
-      <button type="button" disabled={!ready || isPending || !address} onClick={claim} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-control bg-leaf px-5 py-2 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
+      <button type="button" disabled={!ready || isPending || !address} onClick={() => claim()} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-control bg-leaf px-5 py-2 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
         {isPending && <icons.Loader2 size={16} className="animate-spin" aria-hidden="true" />}
         {isPending ? "Waiting for wallet…" : "Claim tokens"}
       </button>

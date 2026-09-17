@@ -12,7 +12,7 @@ export function walletBusy() {
 }
 
 export function runExclusive(task) {
-  if (walletTask) return walletTask;
+  if (walletTask) return Promise.reject(new Error("Finish the open wallet request before starting another."));
   walletTask = Promise.resolve()
     .then(task)
     .finally(() => {

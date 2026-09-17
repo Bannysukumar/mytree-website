@@ -25,7 +25,7 @@ export function readReferralCode() {
 }
 
 export function referralLink(wallet) {
-  const origin = import.meta.env.VITE_SITE_URL || window.location.origin;
+  const origin = window.location.origin || import.meta.env.VITE_SITE_URL || "";
   return `${origin.replace(/\/$/, "")}/join?ref=${wallet}`;
 }
 
