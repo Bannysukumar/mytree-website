@@ -6,6 +6,7 @@ import { usePublicClient, useSignMessage, useWriteContract } from "wagmi";
 import { db, firebaseReady, functions } from "../lib/firebase";
 import { captureReferralFromUrl, normalizeRef, profileMessage, readReferralCode, referralLink } from "../lib/referralUtils";
 import { presaleAbi } from "../lib/contractConfig";
+import { runExclusive } from "../lib/runPurchase";
 import { useSiteContent } from "./useSiteContent";
 import { useWallet } from "./useWallet";
 
@@ -70,48 +71,50 @@ export function useReferralCode() {
     });
   }, [address]);
 
-  async function activate(referrerAddress = "") {
+  function activate(referrerAddress = "") {
     if (!address || !functions) {
       setError("Connect Firebase Functions before a referral profile can be stored.");
-      return;
+      return Promise.resolve(false);
     }
-    setBusy(true);
-    setError("");
-    try {
-      const signature = await signMessageAsync({ message: profileMessage(address) });
-      const call = httpsCallable(functions, "ensureReferralProfile");
-      const result = await call({
-        address,
-        signature,
-        referredByCode: /^0x/i.test(readReferralCode()) ? "" : readReferralCode(),
-        referredByWallet: String(referrerAddress || (/^0x/i.test(readReferralCode()) ? readReferralCode() : "")).trim(),
-      });
-      setCode(result.data.referralCode);
-      setReferrerWallet(result.data.referredBy || "");
-      if (result.data.referredBy && sale?.contractAddress && publicClient) {
-        const bound = await publicClient.readContract({
-          address: sale.contractAddress,
-          abi: presaleAbi,
-          functionName: "referrerOf",
-          args: [getAddress(address)],
+    return runExclusive(async () => {
+      setBusy(true);
+      setError("");
+      try {
+        const signature = await signMessageAsync({ message: profileMessage(address) });
+        const call = httpsCallable(functions, "ensureReferralProfile");
+        const result = await call({
+          address,
+          signature,
+          referredByCode: /^0x/i.test(readReferralCode()) ? "" : readReferralCode(),
+          referredByWallet: String(referrerAddress || (/^0x/i.test(readReferralCode()) ? readReferralCode() : "")).trim(),
         });
-        if (!bound || bound === zeroAddress) {
-          await writeContractAsync({
+        setCode(result.data.referralCode);
+        setReferrerWallet(result.data.referredBy || "");
+        if (result.data.referredBy && sale?.contractAddress && publicClient) {
+          const bound = await publicClient.readContract({
             address: sale.contractAddress,
             abi: presaleAbi,
-            functionName: "attachReferrer",
-            args: [getAddress(result.data.referredBy)],
-            chainId: Number(sale.chainId),
+            functionName: "referrerOf",
+            args: [getAddress(address)],
           });
+          if (!bound || bound === zeroAddress) {
+            await writeContractAsync({
+              address: sale.contractAddress,
+              abi: presaleAbi,
+              functionName: "attachReferrer",
+              args: [getAddress(result.data.referredBy)],
+              chainId: Number(sale.chainId),
+            });
+          }
         }
+        return true;
+      } catch (err) {
+        setError(err.shortMessage || err.message || "Could not activate referral profile.");
+        return false;
+      } finally {
+        setBusy(false);
       }
-    } catch (err) {
-      setError(err.shortMessage || err.message || "Could not activate referral profile.");
-      return false;
-    } finally {
-      setBusy(false);
-    }
-    return true;
+    });
   }
 
   const own = address?.toLowerCase() || "";

@@ -5,6 +5,28 @@ import { clearPendingBuy, savePendingBuy } from "./pendingBuy";
 import { rememberPendingTx } from "./referralUtils";
 import { prepareWalletReturn } from "./wagmi";
 
+let walletTask = null;
+
+export function walletBusy() {
+  return Boolean(walletTask);
+}
+
+export function runExclusive(task) {
+  if (walletTask) return walletTask;
+  walletTask = Promise.resolve()
+    .then(task)
+    .finally(() => {
+      walletTask = null;
+    });
+  return walletTask;
+}
+
+function units(amount) {
+  if (typeof amount === "bigint") return amount;
+  if (typeof amount === "string" && /^\d+$/.test(amount)) return BigInt(amount);
+  throw new Error("Enter a USDT amount.");
+}
+
 async function allowanceOf(publicClient, usdtAddress, buyer, saleAddress) {
   if (!publicClient) return 0n;
   return publicClient.readContract({
@@ -31,8 +53,11 @@ export async function runUsdtPurchase({
 }) {
   await prepareWalletReturn({ persist: true });
   if (!resume) clearPendingBuy();
-  if (currentChainId !== chainId && switchChainAsync) await switchChainAsync({ chainId });
-  const spend = typeof amount === "bigint" ? amount : BigInt(amount);
+  if (currentChainId !== chainId && switchChainAsync) {
+    onStatus?.("Approve the network switch in your wallet.");
+    await switchChainAsync({ chainId });
+  }
+  const spend = units(amount);
   const sponsor = referrer && referrer !== zeroAddress ? getAddress(referrer) : zeroAddress;
   const pending = {
     buyer,
@@ -55,13 +80,15 @@ export async function runUsdtPurchase({
   if (allowed < spend) {
     onStatus?.("Approve the USDT spend in your wallet. Stay on this page after approving.");
     await prepareWalletReturn({ persist: true });
-    await writeContractAsync({
+    const approval = await writeContractAsync({
       address: usdtAddress,
       abi: erc20Abi,
       functionName: "approve",
       args: [getAddress(saleAddress), spend],
       chainId,
     });
+    onStatus?.("USDT approval sent. The transfer opens after that response confirms.");
+    if (publicClient && approval) await publicClient.waitForTransactionReceipt({ hash: approval });
   }
 
   savePendingBuy({ ...pending, step: "buy" });

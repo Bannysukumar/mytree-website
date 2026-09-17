@@ -6,7 +6,7 @@ import { inrNotForTokens, targetChain, toTokenUnits, usdtTokenAddress } from "..
 import { functions } from "../lib/firebase";
 import { explorerAddress, explorerTx, formatNumber, formatUsd, shortAddress } from "../lib/format";
 import { readPendingBuy } from "../lib/pendingBuy";
-import { runUsdtPurchase } from "../lib/runPurchase";
+import { runExclusive, runUsdtPurchase, walletBusy } from "../lib/runPurchase";
 import { usePurchaseStatus } from "../hooks/usePurchaseStatus";
 import { useReferralCode } from "../hooks/useReferralCode";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -54,6 +54,7 @@ export default function BuyWidget({ embedded = false }) {
   const txLink = explorerTx(sale?.explorerUrl, statusState.hash);
 
   async function buy(resumeAmount) {
+    const savedAmount = typeof resumeAmount === "bigint" || (typeof resumeAmount === "string" && /^\d+$/.test(resumeAmount)) ? resumeAmount : undefined;
     setError("");
     if (!isConnected) {
       setError("Connect a wallet first.");
@@ -63,22 +64,22 @@ export default function BuyWidget({ embedded = false }) {
       setError("The sale contract address has not been published yet.");
       return;
     }
-    if (!resumeAmount && price.paused) {
+    if (!savedAmount && price.paused) {
       setError("The sale is paused.");
       return;
     }
-    if (!resumeAmount && (Number(usd) < Number(sale.minPurchaseUsd || 0) || Number(usd) > Number(sale.maxPurchaseUsd || Infinity))) {
+    if (!savedAmount && (Number(usd) < Number(sale.minPurchaseUsd || 0) || Number(usd) > Number(sale.maxPurchaseUsd || Infinity))) {
       setError(`Purchase must be between $${sale.minPurchaseUsd} and $${sale.maxPurchaseUsd}.`);
       return;
     }
-    if (!resumeAmount && tokens > remaining) {
+    if (!savedAmount && tokens > remaining) {
       setError("That amount is larger than the tokens left in this round.");
       return;
     }
     try {
       const chainId = targetChain(sale);
-      const usdtAmount = resumeAmount || toTokenUnits(usd, Number(sale.usdtDecimals || 18));
-      const txHash = await runUsdtPurchase({
+      const usdtAmount = savedAmount || toTokenUnits(usd, Number(sale.usdtDecimals || 18));
+      const txHash = await runExclusive(() => runUsdtPurchase({
         writeContractAsync,
         publicClient,
         chainId,
@@ -89,9 +90,9 @@ export default function BuyWidget({ embedded = false }) {
         buyer: address,
         amount: usdtAmount,
         referrer,
-        resume: Boolean(resumeAmount),
+        resume: Boolean(savedAmount),
         onStatus: setNote,
-      });
+      }));
       setHash(txHash);
       setNote("Purchase submitted. Confirm it in the wallet if it is still waiting.");
       if (functions) {
@@ -110,7 +111,7 @@ export default function BuyWidget({ embedded = false }) {
 
   useEffect(() => {
     const pending = readPendingBuy();
-    if (!publicClient || !pending || !address || !sale?.contractAddress || !isConnected) return;
+    if (walletBusy() || !publicClient || !pending || !address || !sale?.contractAddress || !isConnected) return;
     if (pending.buyer?.toLowerCase() !== address.toLowerCase()) return;
     if (window.__mytreeBuyResume === pending.at) return;
     window.__mytreeBuyResume = pending.at;
@@ -150,7 +151,7 @@ export default function BuyWidget({ embedded = false }) {
             <div className="flex justify-between gap-4"><dt className="text-slate-400">Direct referrer</dt><dd className="tabular-nums">{referred ? `${formatNumber(directBonus, 2)} (${directPct}%)` : "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt className="text-slate-400">Their referrer</dt><dd className="tabular-nums">{referred && upstreamPct ? `${formatNumber(upstreamBonus, 2)} (${upstreamPct}%)` : "—"}</dd></div>
           </dl>
-          <button type="button" disabled={isPending} onClick={buy} className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:cursor-wait disabled:opacity-70">
+          <button type="button" disabled={isPending} onClick={() => buy()} className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:cursor-wait disabled:opacity-70">
             {isPending && <Loader2 size={16} className="animate-spin" aria-hidden="true" />}
             {status === "confirmed" && <Check size={16} aria-hidden="true" />}
             {isPending ? "Confirming in wallet…" : status === "confirmed" ? "Purchase confirmed" : "Buy now"}

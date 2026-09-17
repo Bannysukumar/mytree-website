@@ -20,7 +20,7 @@ import { explorerTx, formatNumber, formatUsd, shortAddress } from "../lib/format
 import { clearPageReturn } from "../lib/dashRedirect";
 import { readPendingBuy } from "../lib/pendingBuy";
 import { prepareWalletReturn } from "../lib/wagmi";
-import { runUsdtPurchase } from "../lib/runPurchase";
+import { runExclusive, runUsdtPurchase, walletBusy } from "../lib/runPurchase";
 import { childrenOf, currentRank, fill, inPeriod, nextMilestone, spendOf, visibleNav } from "../dashboard/stats";
 import * as icons from "lucide-react";
 
@@ -389,10 +389,11 @@ function BuyPanel({ config, mode }) {
     if (referral.referrerWallet && referral.referrerWallet !== address?.toLowerCase()) {
       try { referrer = getAddress(referral.referrerWallet); } catch { referrer = zeroAddress; }
     }
-    const usdtAmount = resume?.amount ? BigInt(resume.amount) : toTokenUnits(amount, Number(sale.usdtDecimals || 18));
-    const sponsor = resume?.referrer ? getAddress(resume.referrer) : referrer;
+    const saved = resume && typeof resume === "object" && typeof resume.amount === "string" ? resume : null;
+    const usdtAmount = saved?.amount ? BigInt(saved.amount) : toTokenUnits(amount, Number(sale.usdtDecimals || 18));
+    const sponsor = saved?.referrer ? getAddress(saved.referrer) : referrer;
     try {
-      const hash = await runUsdtPurchase({
+      const hash = await runExclusive(() => runUsdtPurchase({
         writeContractAsync,
         publicClient,
         chainId: targetChain(sale),
@@ -403,9 +404,9 @@ function BuyPanel({ config, mode }) {
         buyer: address,
         amount: usdtAmount,
         referrer: sponsor,
-        resume: Boolean(resume),
+        resume: Boolean(saved),
         onStatus: setStatus,
-      });
+      }));
       setStatus("Purchase submitted. Tokens transfer when this transaction confirms.");
       if (functions) {
         const recorded = await httpsCallable(functions, "registerPendingPurchase")({ txHash: hash, buyer: address, referrer: sponsor === zeroAddress ? "" : sponsor, promoCode: applied?.code || "" });
@@ -419,7 +420,7 @@ function BuyPanel({ config, mode }) {
 
   useEffect(() => {
     const pending = readPendingBuy();
-    if (!publicClient || !pending || !address || !price.sale?.contractAddress) return;
+    if (walletBusy() || !publicClient || !pending || !address || !price.sale?.contractAddress) return;
     if (pending.buyer?.toLowerCase() !== address.toLowerCase()) return;
     if (pending.saleAddress?.toLowerCase() !== price.sale.contractAddress.toLowerCase()) return;
     if (window.__mytreeBuyResume === pending.at) return;
@@ -491,7 +492,7 @@ function BuyPanel({ config, mode }) {
             <input value={code} onChange={(e) => setCode(e.target.value)} placeholder={copy.promoLabel} aria-label={copy.promoLabel} className="min-h-11 flex-1 rounded-control border border-white/10 bg-ink px-4 text-sm" />
             <button type="button" onClick={applyCode} className="min-h-11 rounded-control border border-white/15 px-4 text-sm">{copy.apply}</button>
           </div>
-          <button type="button" disabled={isPending || !saleReady(price, quote) || !isConnected} onClick={buy} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
+          <button type="button" disabled={isPending || !saleReady(price, quote) || !isConnected} onClick={() => buy()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-leaf py-3 font-semibold text-ink disabled:bg-white/10 disabled:text-white/40">
             {isPending && <icons.Loader2 size={16} className="animate-spin" aria-hidden="true" />}
             {isPending ? "Waiting for wallet…" : copy.buyCta}
           </button>
@@ -785,17 +786,22 @@ function ClaimView({ config, address }) {
     setError("");
     setStatus("Approve the claim in your wallet. You will stay on this page.");
     try {
-      await prepareWalletReturn({ persist: true });
-      const chainId = targetChain(sale);
-      if (chain?.id !== chainId) await switchChainAsync({ chainId });
-      await prepareWalletReturn({ persist: true });
-      const tx = await writeContractAsync({
-        address: sale.contractAddress,
-        abi: presaleAbi,
-        functionName: "claim",
-        chainId,
+      await runExclusive(async () => {
+        await prepareWalletReturn({ persist: true });
+        const chainId = targetChain(sale);
+        if (chain?.id !== chainId) {
+          setStatus("Approve the network switch in your wallet.");
+          await switchChainAsync({ chainId });
+        }
+        setStatus("Approve the claim in your wallet.");
+        const tx = await writeContractAsync({
+          address: sale.contractAddress,
+          abi: presaleAbi,
+          functionName: "claim",
+          chainId,
+        });
+        setHash(tx);
       });
-      setHash(tx);
       setStatus("Claim submitted. The tokens move when this transaction confirms.");
       clearPageReturn();
       claimable.refetch();

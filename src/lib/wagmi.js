@@ -44,19 +44,6 @@ export async function prepareWalletReturn({ persist = false } = {}) {
   } catch {
     // Modal metadata is optional. The connector metadata is what the wallet reads.
   }
-  const connectors = wagmiConfig?.connectors || [];
-  await Promise.all(connectors.map(async (connector) => {
-    if (!String(connector.id || "").toLowerCase().includes("walletconnect")) return;
-    try {
-      const provider = await connector.getProvider?.();
-      applyWalletReturn(provider?.rpc?.metadata, target);
-      applyWalletReturn(provider?.signer?.providerOpts?.metadata, target);
-      applyWalletReturn(provider?.signer?.client?.metadata, target);
-      applyWalletReturn(provider?.client?.metadata, target);
-    } catch {
-      // Provider is created on the first connect if it is not ready yet.
-    }
-  }));
 }
 
 function fallbackConfig() {
