@@ -22,7 +22,7 @@ export default function WalletRedirect() {
       return;
     }
     if (!isConnected) return;
-    if (pathname.startsWith("/join") || pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
+    if (pathname.startsWith("/join") || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/documents")) {
       if (pathname.startsWith("/join")) takeDashboardRedirect();
       return;
     }

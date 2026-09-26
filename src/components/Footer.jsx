@@ -10,12 +10,12 @@ import { useSiteContent } from "../hooks/useSiteContent";
 
 const field = "mt-1 w-full rounded-md border border-white/15 bg-[#0b1220] px-3 py-2 text-sm text-foam outline-none focus:border-mint";
 const siteLinks = [
-  ["Tracks", "#tracks"],
-  ["Supply", "#tokenomics"],
-  ["Buy", "#buy"],
-  ["Donate", "#donate"],
-  ["Stories", "#stories"],
-  ["Journal", "#journal"],
+  ["Tracks", "/#tracks"],
+  ["Buy", "/#buy"],
+  ["Donate", "/#donate"],
+  ["Documents", "/documents"],
+  ["Stories", "/#stories"],
+  ["Journal", "/#journal"],
 ];
 
 function SocialMark({ label }) {
@@ -98,7 +98,13 @@ export default function Footer() {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Site</p>
           <ul className="mt-2 columns-2 gap-x-4 text-sm lg:columns-1">
             {siteLinks.map(([label, href]) => (
-              <li key={href}><a href={href} className="inline-flex py-1 text-slate-200 hover:text-mint">{label}</a></li>
+              <li key={href}>
+                {href.startsWith("/documents") ? (
+                  <Link to="/documents" className="inline-flex py-1 text-slate-200 hover:text-mint">{label}</Link>
+                ) : (
+                  <a href={href} className="inline-flex py-1 text-slate-200 hover:text-mint">{label}</a>
+                )}
+              </li>
             ))}
           </ul>
         </nav>

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cin",
+    "title": "Certificate of Incorporation",
+    "description": "Vasudha Ecological Restoration Council. CIN U88900TN2026NPL193100. Incorporated 13 May 2026.",
+    "fileUrl": "/documents/cin.jpeg",
+    "fileType": "image",
+    "hidden": false,
+    "order": 1
+  },
+  {
+    "id": "pan",
+    "title": "Permanent Account Number",
+    "description": "PAN AAMCV2194H issued to Vasudha Ecological Restoration Council.",
+    "fileUrl": "/documents/pan.jpeg",
+    "fileType": "image",
+    "hidden": false,
+    "order": 2
+  },
+  {
+    "id": "moa",
+    "title": "Memorandum of Association",
+    "description": "Memorandum of Association of Vasudha Ecological Restoration Council.",
+    "fileUrl": "/documents/moa.pdf",
+    "fileType": "pdf",
+    "hidden": false,
+    "order": 3
+  },
+  {
+    "id": "aoa",
+    "title": "Articles of Association",
+    "description": "Articles of Association of Vasudha Ecological Restoration Council.",
+    "fileUrl": "/documents/aoa.pdf",
+    "fileType": "pdf",
+    "hidden": false,
+    "order": 4
+  }
+]

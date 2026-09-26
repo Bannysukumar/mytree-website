@@ -7,6 +7,7 @@ import { clearPendingTx, readPendingTx } from "./lib/referralUtils";
 import { readBuyReturn, readJoinReturn, readPageReturn } from "./lib/dashRedirect";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
+import Documents from "./pages/Documents";
 import Home from "./pages/Home";
 import JoinReferral from "./pages/JoinReferral";
 
@@ -55,6 +56,7 @@ export default function App() {
       <div key={shell} className="reveal">
         <Routes location={location}>
           <Route path="/" element={<HomeEntry />} />
+          <Route path="/documents" element={<Documents />} />
           <Route path="/join" element={<JoinReferral />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/:section" element={<Dashboard />} />

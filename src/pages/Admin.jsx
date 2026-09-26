@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import AdminLayout from "../admin/AdminLayout";
 import AuditLog from "../admin/AuditLog";
 import ContentEditor from "../admin/ContentEditor";
+import DocumentsAdmin from "../admin/DocumentsAdmin";
 import DonationsDashboard from "../admin/DonationsDashboard";
 import PurchasesDashboard from "../admin/PurchasesDashboard";
 import ReferralConfigEditor from "../admin/ReferralConfigEditor";
@@ -20,7 +21,7 @@ import { formatNumber } from "../lib/format";
 import { FileText, Gift, Receipt, Settings2, Users, Wallet } from "lucide-react";
 import AdminLogin from "./AdminLogin";
 
-const tabs = ["overview", "content", "sale", "treasury", "referrals", "purchases", "donations", "ledger", "wallets", "audit", "dashboard"];
+const tabs = ["overview", "content", "documents", "sale", "treasury", "referrals", "purchases", "donations", "ledger", "wallets", "audit", "dashboard"];
 
 export default function Admin() {
   const [user, setUser] = useState(undefined);
@@ -78,6 +79,7 @@ export default function Admin() {
     <AdminLayout user={user} tab={tab} onTab={setTab} onSignOut={() => signOut(auth)}>
       {tab === "overview" && <Overview content={content} />}
       {tab === "content" && <ContentEditor user={user} content={content} />}
+      {tab === "documents" && <DocumentsAdmin user={user} />}
       {tab === "sale" && <SaleControls user={user} />}
       {tab === "treasury" && <TreasuryControls />}
       {tab === "referrals" && <ReferralConfigEditor user={user} />}
@@ -113,6 +115,7 @@ function Overview({ content }) {
           ["/admin/purchases", "Purchases", "Confirmed USDT buys", Receipt, "text-mint"],
           ["/admin/donations", "Donations", "INR gifts only", Gift, "text-sand"],
           ["/admin/content", "Content", "Tracks, stories, and legal copy", FileText, "text-info"],
+          ["/admin/documents", "Documents", "Add, hide, or delete public files", FileText, "text-mint"],
         ].map(([href, label, note, Icon, color]) => (
           <Link key={href} to={href} className="admin-panel flex items-center gap-3 p-4 transition hover:border-mint/40">
             <span className={`inline-flex h-11 w-11 items-center justify-center rounded-control bg-white/5 ${color}`}><Icon size={18} aria-hidden="true" /></span>

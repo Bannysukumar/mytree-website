@@ -37,6 +37,7 @@ const groups = [
     label: "Site",
     links: [
       ["Content", "content", FileText],
+      ["Documents", "documents", FileText],
       ["Wallets", "wallets", Wallet],
       ["User dashboard", "dashboard", SlidersHorizontal],
     ],
