@@ -98,3 +98,13 @@ Set `VITE_SITE_URL` to the public origin before building so referral links and w
 - Upstream levels stop at `maxDepth`.
 - Admin can blacklist a wallet from the dashboard and push that list on-chain.
 - Crypto purchases are final and can lose value. Referral percentages can be changed. Donations are non-refundable except as a written policy says.
+
+<!-- readme-seo: bannysukumar -->
+
+## Open source
+
+This repository is open source and maintained by [Banny Sukumar](https://github.com/Bannysukumar). Mytree Website is published so other developers can study the code and contribute.
+
+## License
+
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Banny Sukumar. See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to help.
